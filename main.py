@@ -24,8 +24,8 @@ dp.workflow_data.update(
 dp.include_router(unknow_user_handlers.router)
 
 @dp.message(Command('test'))
-async def handle_test(message: Message, password):
-    await message.answer(text=str(message.from_user.id))
+async def handle_test(message: Message, password, user_ids):
+    await message.answer(text=f'{user_ids}')
 
 
 async def main():
