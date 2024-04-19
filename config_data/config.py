@@ -6,6 +6,7 @@ class TgBot:
     token: str
     user_ids: list[int]
     admin_ids: list[int]
+    password: str
 
 @dataclass
 class Config:
@@ -20,6 +21,7 @@ def load_config(path):
         tg_bot=TgBot(
             token=env('BOT_TOKEN'),
             admin_ids=list(map(int, env.list('ADMIN_IDS'))),
-            user_ids=list(map(int, env.list('USER_IDS')))
+            user_ids=list(map(int, env.list('USER_IDS'))),
+            password=env('PASSWORD')
         )
     )

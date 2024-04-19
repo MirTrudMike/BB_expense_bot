@@ -7,13 +7,25 @@ from aiogram.types import Message
 #....
 from config_data.config import Config, load_config
 
+from heandlers import unknow_user_handlers
 
 config: Config = load_config('.env')
 
 bot = Bot(token=config.tg_bot.token)
 dp = Dispatcher()
+dp.workflow_data.update(
+    {
+        'password': config.tg_bot.password,
+        'user_ids': config.tg_bot.user_ids,
+        'admin_ids': config.tg_bot.admin_ids
+    }
+)
 
+dp.include_router(unknow_user_handlers.router)
 
+@dp.message(Command('test'))
+async def handle_test(message: Message, password):
+    await message.answer(text=str(message.from_user.id))
 
 
 async def main():
