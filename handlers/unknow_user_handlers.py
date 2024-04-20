@@ -15,6 +15,7 @@ router.message.filter(IsUnknown())
 async def unknown_start_handler(message: Message):
     await message.answer(text=LEXICON_RU['first_meet'])
 
+
 @router.message(F.text)
 async def pass_try_handler(message: Message, password, user_ids):
     if message.text == password:
