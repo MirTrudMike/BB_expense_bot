@@ -5,7 +5,7 @@ class OldFSM(StatesGroup):
     choose_date = State()
     choose_group = State()
     input_amount = State()
-    want_comment = State()
+    saveorcomment = State()
     add_comment = State()
-    confirm = State()
+    save = State()
 

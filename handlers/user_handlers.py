@@ -5,12 +5,13 @@ from lexicone import LEXICON_RU
 from filters.filters import IsUser, is_float
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, CallbackQuery
 from aiogram_calendar import SimpleCalendar, SimpleCalendarCallback, get_user_locale
-from aiogram.filters.callback_data import CallbackData
 from keyboards.inline_kb import categories_inline_kb, create_inline_kb
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from FSM.user_FSM import OldFSM
-from functions.functions import decorate_expense
+from functions.functions import decorate_expense, update_base_file
+from aiogram.methods.delete_messages import DeleteMessages
+from time import sleep
 
 router = Router()
 router.message.filter(IsUser())
@@ -36,11 +37,13 @@ async def old_expense_handler(message: Message, state: FSMContext):
 @router.callback_query(SimpleCalendarCallback.filter(), StateFilter(OldFSM.choose_date))
 async def calendar_process(callback_query: CallbackQuery, callback_data: SimpleCalendarCallback, state: FSMContext):
     calendar = SimpleCalendar(show_alerts=True)
+    calendar.set_dates_range(datetime(2022, 11, 1), datetime.now())
     selected, date = await calendar.process_selection(callback_query, callback_data)
     if selected:
-        await state.update_data(date=date)
+        await state.update_data(date=date.strftime("%-d %B %Y"))
+        await state.update_data(text=f'📆 {date.strftime("%-d %B %Y")}')
         await callback_query.message.edit_text(
-            text=f'Выбрана дата: {date.strftime("%d-%m-%Y")}\n\n'
+            text=f'Выбрана дата:\n📆 {date.strftime("%-d %B %Y")}\n\n'
                  f'А теперь на что потратила:',
             reply_markup=categories_inline_kb
         )
@@ -56,8 +59,13 @@ async def expect_date_warning(message: Message):
 @router.callback_query(StateFilter(OldFSM.choose_group))
 async def category_process(callback: CallbackQuery, state: FSMContext):
     await state.update_data(category=callback.data)
-    await callback.message.edit_text(text=LEXICON_RU['input_amount'])
+    data = await state.get_data()
+    text = data['text'] + f'\n{LEXICON_RU[callback.data]}'
+    await state.update_data(text=text)
+    await callback.message.edit_text(text=f"{text}\n\n{LEXICON_RU['input_amount']}")
     await state.set_state(OldFSM.input_amount)
+    id = callback.message.message_id
+    print(id)
 
 
 @router.message(is_float, StateFilter(OldFSM.input_amount))
@@ -65,15 +73,79 @@ async def process_amount(message: Message, state: FSMContext):
     amount = float(message.text)
     await state.update_data(amount=amount)
     data = await state.get_data()
+    text = data['text'] + f"\n🪙 {amount} Лари"
+    await state.update_data(text=text)
     await message.answer(
-        text=f'Вот что получилось:\n\n{decorate_expense(data)}',
+        text=f'Вот что получилось:\n\n{text}',
         reply_markup=create_inline_kb(1, save='Сохранить', comment='Добавить комментарий')
     )
+    await state.set_state(OldFSM.saveorcomment)
+
 
 
 @router.message(StateFilter(OldFSM.input_amount))
-async def process_wrong_amount(message: Message):
+async def process_wrong_amount(message: Message, bot):
     await message.answer(text=LEXICON_RU['wrong_amount'])
+    sleep(1.5)
+    await bot.delete_messages(chat_id=message.chat.id,
+                              message_ids=[message.message_id,
+                                           message.message_id + 1])
+
+
+@router.callback_query(F.data == 'comment', StateFilter(OldFSM.saveorcomment))
+async def comment_option_process(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    text = data['text']
+    await callback.message.edit_text(text=f'{text}\n\nНапиши любой коммент:')
+    await state.set_state(OldFSM.add_comment)
+    id = callback.message.message_id
+    print(id)
+
+
+@router.message(F.text, StateFilter(OldFSM.add_comment))
+async def process_comment(message: Message, state: FSMContext):
+    data = await state.get_data()
+    text = data['text'] + f"\n🏷️ {message.text}"
+    await state.update_data(text=text)
+    await state.update_data(comment=message.text)
+    await message.answer(text=text,
+                         reply_markup=create_inline_kb(1, save='Сохранить'))
+    await state.set_state(OldFSM.save)
+
+
+@router.callback_query(F.data == 'save', StateFilter(OldFSM.save))
+async def save_with_comment(callback: CallbackQuery, state: FSMContext, expense_base, bot):
+    data = await state.get_data()
+    text = data['text']
+    await callback.message.edit_text(text=f"{text}\n\n{LEXICON_RU['done']}")
+    del data['text']
+    expense_base.append(data)
+    update_base_file(expense_base)
+    await state.clear()
+    await bot.delete_messages(chat_id=callback.message.chat.id,
+                              message_ids=[callback.message.message_id - 1,
+                                           callback.message.message_id - 2,
+                                           callback.message.message_id - 3,
+                                           callback.message.message_id - 4,
+                                           callback.message.message_id - 5])
+
+
+@router.callback_query(F.data == 'save', StateFilter(OldFSM.saveorcomment))
+async def save_no_comment(callback: CallbackQuery, state: FSMContext, expense_base, bot):
+    await state.update_data(comment=None)
+    data = await state.get_data()
+    text = data['text']
+    await callback.message.edit_text(text=f"{text}\n\n{LEXICON_RU['done']}")
+    del data['text']
+    expense_base.append(data)
+    update_base_file(expense_base)
+    await state.clear()
+    await bot.delete_messages(chat_id=callback.message.chat.id,
+                              message_ids=[callback.message.message_id - 1,
+                                           callback.message.message_id - 2,
+                                           callback.message.message_id - 3])
+
+
 
 
 

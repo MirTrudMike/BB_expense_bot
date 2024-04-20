@@ -20,7 +20,8 @@ dp.workflow_data.update(
     {
         'password': config.tg_bot.password,
         'user_ids': config.tg_bot.user_ids,
-        'admin_ids': config.tg_bot.admin_ids
+        'admin_ids': config.tg_bot.admin_ids,
+        'expense_base': config.expense_base
     }
 )
 

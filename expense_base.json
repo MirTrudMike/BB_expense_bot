@@ -1,0 +1,68 @@
+[
+    {
+        "date": null,
+        "category": null,
+        "amount": null,
+        "comment": null
+    },
+    {
+        "date": "11 April 2024",
+        "category": "service",
+        "amount": 678.0,
+        "comment": null
+    },
+    {
+        "date": "11 April 2024",
+        "category": "f%b",
+        "amount": 1247.0,
+        "comment": "Оолд"
+    },
+    {
+        "date": "10 April 2024",
+        "category": "service",
+        "amount": 467.0,
+        "comment": null
+    },
+    {
+        "date": "11 April 2024",
+        "category": "service",
+        "amount": 6778.0,
+        "comment": "Hjjk"
+    },
+    {
+        "date": "12 April 2024",
+        "category": "Special",
+        "amount": 258.0,
+        "comment": null
+    },
+    {
+        "date": "11 April 2024",
+        "category": "f%b",
+        "amount": 457.0,
+        "comment": null
+    },
+    {
+        "date": "11 April 2024",
+        "category": "Repair",
+        "amount": 357.0,
+        "comment": "Ghjj"
+    },
+    {
+        "date": "11 April 2024",
+        "category": "salary",
+        "amount": 578.0,
+        "comment": "Ghjbc"
+    },
+    {
+        "date": "10 April 2024",
+        "category": "f%b",
+        "amount": 5678.0,
+        "comment": "Hdjdnd"
+    },
+    {
+        "date": "9 April 2024",
+        "category": "Special",
+        "amount": 677.0,
+        "comment": null
+    }
+]
