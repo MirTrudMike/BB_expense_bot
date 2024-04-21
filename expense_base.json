@@ -64,5 +64,68 @@
         "category": "Special",
         "amount": 677.0,
         "comment": null
+    },
+    {
+        "type": "new",
+        "date": "21 April 2024",
+        "category": "salary",
+        "amount": 467.0,
+        "comment": "Hhj"
+    },
+    {
+        "type": "new",
+        "date": "21 April 2024",
+        "category": "salary",
+        "amount": 667.0,
+        "comment": null
+    },
+    {
+        "type": "new",
+        "date": "21 April 2024",
+        "category": "f%b",
+        "amount": 678.0,
+        "comment": null
+    },
+    {
+        "type": "new",
+        "date": "21 April 2024",
+        "category": "service",
+        "amount": 788.0,
+        "comment": "Ghj"
+    },
+    {
+        "type": "new",
+        "date": "21 April 2024",
+        "category": "salary",
+        "amount": 678.0,
+        "comment": null
+    },
+    {
+        "type": "new",
+        "date": "21 April 2024",
+        "category": "f%b",
+        "amount": 467.0,
+        "comment": null
+    },
+    {
+        "type": "new",
+        "date": "21 April 2024",
+        "category": "service",
+        "amount": 678.0,
+        "comment": "Ghkl"
+    },
+    {
+        "type": "new",
+        "date": "21 April 2024",
+        "category": "Special",
+        "amount": 568.0,
+        "comment": null
+    },
+    {
+        "type": "new",
+        "date": "21 April 2024",
+        "category": "HH items",
+        "amount": 567.0,
+        "comment": "Gnkkn"
     }
 ]
