@@ -2,10 +2,7 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
-from aiogram.filters import Command
-from aiogram.types import Message
 from aiogram.fsm.storage.memory import MemoryStorage
-#....
 from config_data.config import Config, load_config
 
 from handlers import unknow_user_handlers, user_handlers
@@ -30,10 +27,10 @@ dp.include_router(unknow_user_handlers.router)
 dp.include_router(user_handlers.router)
 
 
-@dp.message(Command('test'))
-async def handle_test(message: Message, password, user_ids):
-    await message.answer(text=f'Vot ono:',
-                         reply_markup=reg_categories_kb.as_markup())
+# @dp.message(Command('test'))
+# async def handle_test(message: Message, password, user_ids):
+#     await message.answer(text=f'Vot ono:',
+#                          reply_markup=reg_categories_kb.as_markup()')
 
 
 async def main():

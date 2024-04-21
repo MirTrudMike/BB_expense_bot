@@ -88,5 +88,40 @@
         "category": "repair",
         "amount": 678.0,
         "comment": null
+    },
+    {
+        "input_type": "category_button",
+        "date": "21 April 2024",
+        "category": "f%b",
+        "amount": 689.0,
+        "comment": null
+    },
+    {
+        "input_type": "category_button",
+        "date": "22 April 2024",
+        "category": "salary",
+        "amount": 667.0,
+        "comment": null
+    },
+    {
+        "input_type": "old",
+        "date": "18 April 2024",
+        "category": "f%b",
+        "amount": 678.0,
+        "comment": null
+    },
+    {
+        "input_type": "new",
+        "date": "22 April 2024",
+        "category": "repair",
+        "amount": 578.0,
+        "comment": "Ghjk"
+    },
+    {
+        "input_type": "category_button",
+        "date": "22 April 2024",
+        "category": "Special",
+        "amount": 567.0,
+        "comment": null
     }
 ]

@@ -1,7 +1,7 @@
 from datetime import datetime
 from aiogram import Router, F
 from aiogram.filters import Command, StateFilter
-from lexicone import LEXICON_RU
+from lexicone import LEXICON_RU, STATE_EXPLAIN
 from filters.filters import IsUser, is_float
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, CallbackQuery
 from aiogram_calendar import SimpleCalendar, SimpleCalendarCallback, get_user_locale
@@ -72,12 +72,12 @@ async def calendar_process(callback_query: CallbackQuery, callback_data: SimpleC
 
 
 # Not really needed
-@router.message(StateFilter(OldFSM.choose_date))
-async def expect_date_warning(message: Message):
-    await message.answer(text=LEXICON_RU['date_expected_warning'])
+# @router.message(StateFilter(OldFSM.choose_date))
+# async def expect_date_warning(message: Message):
+#     await message.answer(text=LEXICON_RU['date_expected_warning'])
 
 
-@router.callback_query(StateFilter(OldFSM.choose_group))
+@router.callback_query(F.data.in_(categories), StateFilter(OldFSM.choose_group))
 async def category_process(callback: CallbackQuery, state: FSMContext):
     await state.update_data(category=callback.data)
     data = await state.get_data()
@@ -326,3 +326,23 @@ async def process_sum_command(message: Message, state: FSMContext):
 
 
 # bellow should be handler for answering and deleting any random message
+@router.message()
+async def process_random_message(message: Message):
+    await message.answer(text='Это не то, чего я жду 🥶',
+                         reply_markup=create_inline_kb(1,
+                                                       understand='🫶🏽 Понятно',
+                                                       dont_understand='🤯 Объясни почему'))
+
+@router.callback_query(F.data == 'understand')
+async def process_understand_button(callback: CallbackQuery, bot):
+    await bot.delete_messages(chat_id=callback.message.chat.id,
+                              message_ids=[callback.message.message_id,
+                                           callback.message.message_id - 1]
+                        )
+
+
+@router.callback_query(F.data == 'dont_understand', ~StateFilter(default_state))
+async def process_dont_understand(callback: CallbackQuery, state: FSMContext, bot):
+    status = await state.get_state()
+    await callback.message.edit_text(text=STATE_EXPLAIN[status],
+                                     reply_markup=create_inline_kb(1, understand='Теперь\nпонятно 🫶'))
