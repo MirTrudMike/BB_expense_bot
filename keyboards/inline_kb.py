@@ -28,4 +28,4 @@ def create_inline_kb(width: int,
     return kb_builder.as_markup()
 
 
-categories_inline_kb = create_inline_kb(3,*categories)
+categories_inline_kb = create_inline_kb(3, *categories)

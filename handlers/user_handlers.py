@@ -12,6 +12,7 @@ from FSM.user_FSM import OldFSM
 from functions.functions import decorate_expense, update_base_file
 from aiogram.methods.delete_messages import DeleteMessages
 from time import sleep
+from config_data.info import categories_ru, categories
 
 router = Router()
 router.message.filter(IsUser())
@@ -31,7 +32,7 @@ async def process_exit_command(message: Message, state: FSMContext, bot):
 @router.message(Command('new'), StateFilter(default_state))
 async def new_expense_handler(message: Message, state: FSMContext):
     date = datetime.now()
-    await state.update_data(expense_type='new',
+    await state.update_data(input_type='new',
                             date=date.strftime("%-d %B %Y"),
                             text=f'📆 {date.strftime("%-d %B %Y")}',
                             first_id=message.message_id)
@@ -49,7 +50,7 @@ async def old_expense_handler(message: Message, state: FSMContext):
         text='Расскажи когда это случилось',
         reply_markup=await calendar.start_calendar()
     )
-    await state.update_data(expense_type='old')
+    await state.update_data(input_type='old')
     await state.update_data(first_id=message.message_id)
     await state.set_state(OldFSM.choose_date)
 
@@ -98,7 +99,6 @@ async def process_amount(message: Message, state: FSMContext):
         reply_markup=create_inline_kb(1, save='Сохранить', comment='Добавить комментарий')
     )
     await state.set_state(OldFSM.save_or_comment)
-
 
 
 @router.message(StateFilter(OldFSM.input_amount))
@@ -151,24 +151,31 @@ async def save_no_comment(callback: CallbackQuery, state: FSMContext, expense_ba
     data = await state.get_data()
     text = data['text']
     first_id = data['first_id']
-    await callback.message.edit_text(text=f"{text}\n\n{LEXICON_RU['done']}",
-                                     reply_markup=create_inline_kb(1, more='Есть ещё 👻', done='Пока всё 🫱🏽‍🫲🏾'))
+    input_type = data['input_type']
     del data['text']
     del data['first_id']
     expense_base.append(data)
     update_base_file(expense_base)
-    await bot.delete_messages(chat_id=callback.message.chat.id,
-                              message_ids=[id for id in range(first_id, callback.message.message_id)])
-    await state.set_state(OldFSM.more_or_done)
+    if input_type != 'category_button':
+        await callback.message.edit_text(text=f"{text}\n\n{LEXICON_RU['done']}",
+                                         reply_markup=create_inline_kb(1, more='Есть ещё 👻', done='Пока всё 🫱🏽‍🫲🏾'))
+        await bot.delete_messages(chat_id=callback.message.chat.id,
+                                  message_ids=[id for id in range(first_id, callback.message.message_id)])
+        await state.set_state(OldFSM.more_or_done)
+    else:
+        await callback.message.edit_text(text=f"{text}\n\n{LEXICON_RU['done']}")
+        await bot.delete_messages(chat_id=callback.message.chat.id,
+                                  message_ids=[id for id in range(first_id, callback.message.message_id)])
+        await state.clear()
 
 
 @router.callback_query(F.data == 'more', StateFilter(OldFSM.more_or_done))
 async def process_one_more(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
-    expense_type = data['expense_type']
-    if expense_type == 'new':
+    input_type = data['input_type']
+    if input_type == 'new':
         date = datetime.now()
-        await state.update_data(expense_type='new',
+        await state.update_data(input_type='new',
                                 date=date.strftime("%-d %B %Y"),
                                 text=f'📆 {date.strftime("%-d %B %Y")}',
                                 first_id=callback.message.message_id + 1)
@@ -178,14 +185,14 @@ async def process_one_more(callback: CallbackQuery, state: FSMContext):
         await callback.message.delete_reply_markup()
         await state.set_state(OldFSM.choose_group)
 
-    if expense_type == 'old':
+    if input_type == 'old':
         calendar = SimpleCalendar(show_alerts=True)
         calendar.set_dates_range(datetime(2022, 11, 1), datetime.now())
         await callback.message.answer(
             text='Расскажи когда это случилось',
             reply_markup=await calendar.start_calendar()
         )
-        await state.update_data(expense_type='old')
+        await state.update_data(input_type='old')
         await state.update_data(first_id=callback.message.message_id + 1)
         await callback.message.delete_reply_markup()
         await state.set_state(OldFSM.choose_date)
@@ -200,3 +207,16 @@ async def process_done(callback: CallbackQuery, state: FSMContext):
     await state.clear()
 
 
+@router.message(F.text.in_(categories_ru), StateFilter(default_state))
+async def category_process(message: Message, state: FSMContext):
+    first_id = message.message_id
+    date = datetime.now().strftime("%-d %B %Y")
+    category = categories[categories_ru.index(message.text)]
+    text = f"📆 {date}\n{message.text}"
+    await state.set_state(OldFSM.input_amount)
+    await state.update_data(first_id=first_id,
+                            date=date,
+                            category=category,
+                            text=text,
+                            input_type='category_button')
+    await message.answer(text=f"{text}\n\nНа сколько мы обеднели?")

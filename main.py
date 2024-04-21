@@ -10,6 +10,7 @@ from config_data.config import Config, load_config
 
 from handlers import unknow_user_handlers, user_handlers
 
+
 config: Config = load_config('.env')
 
 storage = MemoryStorage()
@@ -31,7 +32,8 @@ dp.include_router(user_handlers.router)
 
 @dp.message(Command('test'))
 async def handle_test(message: Message, password, user_ids):
-    await message.answer(text=f'{user_ids}')
+    await message.answer(text=f'Vot ono:',
+                         reply_markup=reg_categories_kb.as_markup())
 
 
 async def main():

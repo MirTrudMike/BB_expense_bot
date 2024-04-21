@@ -204,5 +204,94 @@
         "category": "Repair",
         "amount": 101010.0,
         "comment": null
+    },
+    {
+        "expense_type": "new",
+        "date": "21 April 2024",
+        "category": "service",
+        "amount": 567.0,
+        "comment": null
+    },
+    {
+        "expense_type": "new",
+        "date": "21 April 2024",
+        "category": "salary",
+        "amount": 568.0,
+        "comment": "Hhj"
+    },
+    {
+        "expense_type": "new",
+        "date": "21 April 2024",
+        "category": "service",
+        "amount": 55.0,
+        "comment": "Huj"
+    },
+    {
+        "expense_type": "new",
+        "date": "21 April 2024",
+        "category": "salary",
+        "amount": 66.0,
+        "comment": null
+    },
+    {
+        "expense_type": "new",
+        "date": "21 April 2024",
+        "category": "salary",
+        "amount": 567.0,
+        "comment": "Ghj"
+    },
+    {
+        "date": "21 April 2024",
+        "category": "service",
+        "amount": 567.0,
+        "comment": null
+    },
+    {
+        "date": "21 April 2024",
+        "category": "salary",
+        "amount": 578.0,
+        "comment": "Fgj"
+    },
+    {
+        "expense_type": "new",
+        "date": "21 April 2024",
+        "category": "Repair",
+        "amount": 56.0,
+        "comment": null
+    },
+    {
+        "input_type": "old",
+        "date": "11 April 2024",
+        "category": "f%b",
+        "amount": 111.0,
+        "comment": null
+    },
+    {
+        "input_type": "old",
+        "date": "9 April 2024",
+        "category": "Special",
+        "amount": 568.0,
+        "comment": null
+    },
+    {
+        "date": "21 April 2024",
+        "category": "service",
+        "input_type": "category_button",
+        "amount": 567.0,
+        "comment": null
+    },
+    {
+        "date": "21 April 2024",
+        "category": "f%b",
+        "input_type": "category_button",
+        "amount": 679.0,
+        "comment": null
+    },
+    {
+        "date": "21 April 2024",
+        "category": "salary",
+        "input_type": "category_button",
+        "amount": 135.0,
+        "comment": null
     }
 ]
