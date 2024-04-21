@@ -127,5 +127,82 @@
         "category": "HH items",
         "amount": 567.0,
         "comment": "Gnkkn"
+    },
+    {
+        "type": "new",
+        "date": "21 April 2024",
+        "category": "service",
+        "amount": 467.0,
+        "comment": null
+    },
+    {
+        "expense_type": "new",
+        "date": "21 April 2024",
+        "category": "service",
+        "amount": 467.0,
+        "comment": null
+    },
+    {
+        "expense_type": "new",
+        "date": "21 April 2024",
+        "category": "Special",
+        "amount": 1111.0,
+        "comment": "Aaaaa"
+    },
+    {
+        "expense_type": "new",
+        "date": "21 April 2024",
+        "category": "f%b",
+        "amount": 1111.0,
+        "comment": null
+    },
+    {
+        "expense_type": "new",
+        "date": "21 April 2024",
+        "category": "service",
+        "amount": 2222.0,
+        "comment": null
+    },
+    {
+        "expense_type": "new",
+        "date": "21 April 2024",
+        "category": "f%b",
+        "amount": 555.0,
+        "comment": null
+    },
+    {
+        "expense_type": "new",
+        "date": "21 April 2024",
+        "category": "service",
+        "amount": 666.0,
+        "comment": "Hghj"
+    },
+    {
+        "expense_type": "new",
+        "date": "21 April 2024",
+        "category": "salary",
+        "amount": 777.0,
+        "comment": null
+    },
+    {
+        "expense_type": "old",
+        "date": "12 April 2024",
+        "category": "HH items",
+        "amount": 888.0,
+        "comment": null
+    },
+    {
+        "expense_type": "old",
+        "date": "13 April 2024",
+        "category": "Repair",
+        "amount": 999.0,
+        "comment": null
+    },
+    {
+        "expense_type": "old",
+        "date": "16 April 2024",
+        "category": "Repair",
+        "amount": 101010.0,
+        "comment": null
     }
 ]
