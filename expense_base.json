@@ -6,292 +6,87 @@
         "comment": null
     },
     {
-        "date": "11 April 2024",
-        "category": "service",
-        "amount": 678.0,
-        "comment": null
-    },
-    {
-        "date": "11 April 2024",
+        "input_type": "old",
+        "date": "1 March 2024",
         "category": "f%b",
-        "amount": 1247.0,
-        "comment": "Оолд"
-    },
-    {
-        "date": "10 April 2024",
-        "category": "service",
-        "amount": 467.0,
-        "comment": null
-    },
-    {
-        "date": "11 April 2024",
-        "category": "service",
-        "amount": 6778.0,
-        "comment": "Hjjk"
-    },
-    {
-        "date": "12 April 2024",
-        "category": "Special",
-        "amount": 258.0,
-        "comment": null
-    },
-    {
-        "date": "11 April 2024",
-        "category": "f%b",
-        "amount": 457.0,
-        "comment": null
-    },
-    {
-        "date": "11 April 2024",
-        "category": "Repair",
-        "amount": 357.0,
-        "comment": "Ghjj"
-    },
-    {
-        "date": "11 April 2024",
-        "category": "salary",
-        "amount": 578.0,
-        "comment": "Ghjbc"
-    },
-    {
-        "date": "10 April 2024",
-        "category": "f%b",
-        "amount": 5678.0,
-        "comment": "Hdjdnd"
-    },
-    {
-        "date": "9 April 2024",
-        "category": "Special",
-        "amount": 677.0,
-        "comment": null
-    },
-    {
-        "type": "new",
-        "date": "21 April 2024",
-        "category": "salary",
-        "amount": 467.0,
-        "comment": "Hhj"
-    },
-    {
-        "type": "new",
-        "date": "21 April 2024",
-        "category": "salary",
-        "amount": 667.0,
-        "comment": null
-    },
-    {
-        "type": "new",
-        "date": "21 April 2024",
-        "category": "f%b",
-        "amount": 678.0,
-        "comment": null
-    },
-    {
-        "type": "new",
-        "date": "21 April 2024",
-        "category": "service",
-        "amount": 788.0,
-        "comment": "Ghj"
-    },
-    {
-        "type": "new",
-        "date": "21 April 2024",
-        "category": "salary",
-        "amount": 678.0,
-        "comment": null
-    },
-    {
-        "type": "new",
-        "date": "21 April 2024",
-        "category": "f%b",
-        "amount": 467.0,
-        "comment": null
-    },
-    {
-        "type": "new",
-        "date": "21 April 2024",
-        "category": "service",
-        "amount": 678.0,
-        "comment": "Ghkl"
-    },
-    {
-        "type": "new",
-        "date": "21 April 2024",
-        "category": "Special",
-        "amount": 568.0,
-        "comment": null
-    },
-    {
-        "type": "new",
-        "date": "21 April 2024",
-        "category": "HH items",
-        "amount": 567.0,
-        "comment": "Gnkkn"
-    },
-    {
-        "type": "new",
-        "date": "21 April 2024",
-        "category": "service",
-        "amount": 467.0,
-        "comment": null
-    },
-    {
-        "expense_type": "new",
-        "date": "21 April 2024",
-        "category": "service",
-        "amount": 467.0,
-        "comment": null
-    },
-    {
-        "expense_type": "new",
-        "date": "21 April 2024",
-        "category": "Special",
-        "amount": 1111.0,
-        "comment": "Aaaaa"
-    },
-    {
-        "expense_type": "new",
-        "date": "21 April 2024",
-        "category": "f%b",
-        "amount": 1111.0,
-        "comment": null
-    },
-    {
-        "expense_type": "new",
-        "date": "21 April 2024",
-        "category": "service",
-        "amount": 2222.0,
-        "comment": null
-    },
-    {
-        "expense_type": "new",
-        "date": "21 April 2024",
-        "category": "f%b",
-        "amount": 555.0,
-        "comment": null
-    },
-    {
-        "expense_type": "new",
-        "date": "21 April 2024",
-        "category": "service",
-        "amount": 666.0,
-        "comment": "Hghj"
-    },
-    {
-        "expense_type": "new",
-        "date": "21 April 2024",
-        "category": "salary",
-        "amount": 777.0,
-        "comment": null
-    },
-    {
-        "expense_type": "old",
-        "date": "12 April 2024",
-        "category": "HH items",
-        "amount": 888.0,
-        "comment": null
-    },
-    {
-        "expense_type": "old",
-        "date": "13 April 2024",
-        "category": "Repair",
-        "amount": 999.0,
-        "comment": null
-    },
-    {
-        "expense_type": "old",
-        "date": "16 April 2024",
-        "category": "Repair",
-        "amount": 101010.0,
-        "comment": null
-    },
-    {
-        "expense_type": "new",
-        "date": "21 April 2024",
-        "category": "service",
-        "amount": 567.0,
-        "comment": null
-    },
-    {
-        "expense_type": "new",
-        "date": "21 April 2024",
-        "category": "salary",
-        "amount": 568.0,
-        "comment": "Hhj"
-    },
-    {
-        "expense_type": "new",
-        "date": "21 April 2024",
-        "category": "service",
-        "amount": 55.0,
-        "comment": "Huj"
-    },
-    {
-        "expense_type": "new",
-        "date": "21 April 2024",
-        "category": "salary",
-        "amount": 66.0,
-        "comment": null
-    },
-    {
-        "expense_type": "new",
-        "date": "21 April 2024",
-        "category": "salary",
-        "amount": 567.0,
-        "comment": "Ghj"
-    },
-    {
-        "date": "21 April 2024",
-        "category": "service",
-        "amount": 567.0,
-        "comment": null
-    },
-    {
-        "date": "21 April 2024",
-        "category": "salary",
-        "amount": 578.0,
-        "comment": "Fgj"
-    },
-    {
-        "expense_type": "new",
-        "date": "21 April 2024",
-        "category": "Repair",
-        "amount": 56.0,
+        "amount": 100.0,
         "comment": null
     },
     {
         "input_type": "old",
-        "date": "11 April 2024",
+        "date": "5 March 2024",
+        "category": "f%b",
+        "amount": 100.0,
+        "comment": null
+    },
+    {
+        "input_type": "old",
+        "date": "14 March 2024",
+        "category": "f%b",
+        "amount": 100.0,
+        "comment": null
+    },
+    {
+        "input_type": "old",
+        "date": "3 April 2024",
         "category": "f%b",
         "amount": 111.0,
         "comment": null
     },
     {
         "input_type": "old",
-        "date": "9 April 2024",
-        "category": "Special",
-        "amount": 568.0,
+        "date": "5 April 2024",
+        "category": "f%b",
+        "amount": 111.0,
         "comment": null
     },
     {
+        "input_type": "old",
+        "date": "10 April 2024",
+        "category": "f%b",
+        "amount": 111.0,
+        "comment": null
+    },
+    {
+        "input_type": "old",
+        "date": "4 April 2024",
+        "category": "service",
+        "amount": 555.0,
+        "comment": null
+    },
+    {
+        "input_type": "old",
+        "date": "19 April 2024",
+        "category": "service",
+        "amount": 555.0,
+        "comment": null
+    },
+    {
+        "input_type": "old",
         "date": "21 April 2024",
         "category": "service",
-        "input_type": "category_button",
-        "amount": 567.0,
+        "amount": 555.0,
         "comment": null
     },
     {
-        "date": "21 April 2024",
-        "category": "f%b",
-        "input_type": "category_button",
-        "amount": 679.0,
+        "input_type": "old",
+        "date": "18 April 2024",
+        "category": "service",
+        "amount": 444.0,
         "comment": null
     },
     {
-        "date": "21 April 2024",
+        "input_type": "old",
+        "date": "20 April 2024",
         "category": "salary",
+        "amount": 456.0,
+        "comment": null
+    },
+    {
         "input_type": "category_button",
-        "amount": 135.0,
+        "date": "21 April 2024",
+        "category": "repair",
+        "amount": 678.0,
         "comment": null
     }
 ]

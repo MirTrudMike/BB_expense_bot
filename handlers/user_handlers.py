@@ -8,8 +8,8 @@ from aiogram_calendar import SimpleCalendar, SimpleCalendarCallback, get_user_lo
 from keyboards.inline_kb import categories_inline_kb, create_inline_kb
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
-from FSM.user_FSM import OldFSM
-from functions.functions import decorate_expense, update_base_file
+from FSM.user_FSM import OldFSM, GetSumFSM
+from functions.functions import get_sum, update_base_file, make_xlsx
 from aiogram.methods.delete_messages import DeleteMessages
 from time import sleep
 from config_data.info import categories_ru, categories
@@ -134,15 +134,23 @@ async def save_with_comment(callback: CallbackQuery, state: FSMContext, expense_
     data = await state.get_data()
     text = data['text']
     first_id = data['first_id']
-    await callback.message.edit_text(text=f"{text}\n\n{LEXICON_RU['done']}",
-                                     reply_markup=create_inline_kb(1, more='Есть ещё 👻', done='Пока всё 🫱🏽‍🫲🏾'))
+    input_type = data['input_type']
     del data['text']
     del data['first_id']
     expense_base.append(data)
     update_base_file(expense_base)
-    await bot.delete_messages(chat_id=callback.message.chat.id,
-                              message_ids=[id for id in range(first_id, callback.message.message_id)])
-    await state.set_state(OldFSM.more_or_done)
+    if input_type != 'category_button':
+        await callback.message.edit_text(text=f"{text}\n\n{LEXICON_RU['done']}",
+                                         reply_markup=create_inline_kb(1, more='Есть ещё 👻', done='Пока всё 🫱🏽‍🫲🏾'))
+        await bot.delete_messages(chat_id=callback.message.chat.id,
+                                  message_ids=[id for id in range(first_id, callback.message.message_id)])
+        await state.set_state(OldFSM.more_or_done)
+
+    else:
+        await callback.message.edit_text(text=f"{text}\n\n{LEXICON_RU['done']}")
+        await bot.delete_messages(chat_id=callback.message.chat.id,
+                                  message_ids=[id for id in range(first_id, callback.message.message_id)])
+        await state.clear()
 
 
 @router.callback_query(F.data == 'save', StateFilter(OldFSM.save_or_comment))
@@ -214,9 +222,107 @@ async def category_process(message: Message, state: FSMContext):
     category = categories[categories_ru.index(message.text)]
     text = f"📆 {date}\n{message.text}"
     await state.set_state(OldFSM.input_amount)
-    await state.update_data(first_id=first_id,
+    await state.update_data(input_type='category_button',
+                            first_id=first_id,
                             date=date,
                             category=category,
-                            text=text,
-                            input_type='category_button')
+                            text=text
+                            )
     await message.answer(text=f"{text}\n\nНа сколько мы обеднели?")
+
+
+@router.message(Command('sum'))
+async def process_sum_command(message: Message, state: FSMContext):
+    calendar = SimpleCalendar(show_alerts=True)
+    calendar.set_dates_range(datetime(2022, 11, 1), datetime.now())
+    await message.answer(
+        text='Откуда вспоминать?',
+        reply_markup=await calendar.start_calendar()
+    )
+    await state.set_state(GetSumFSM.choose_from)
+    await state.update_data(mode='chat')
+
+
+@router.callback_query(SimpleCalendarCallback.filter(), StateFilter(GetSumFSM.choose_from))
+async def process_start_date(callback: CallbackQuery, callback_data: SimpleCalendarCallback, state: FSMContext):
+    calendar = SimpleCalendar(show_alerts=True)
+    calendar.set_dates_range(datetime(2022, 11, 1), datetime.now())
+    selected, date = await calendar.process_selection(callback, callback_data)
+    if selected:
+        await state.update_data(from_date=date,
+                                first_id=callback.message.message_id - 1)
+        await callback.message.edit_text(
+            text=f'📆 {date.strftime("%-d %B %Y")} - ☁️\n\n'
+                 f'А теперь конец периода',
+            reply_markup=await calendar.start_calendar()
+        )
+        await state.set_state(GetSumFSM.choose_to)
+
+
+@router.callback_query(SimpleCalendarCallback.filter(), StateFilter(GetSumFSM.choose_to))
+async def process_end_date(callback: CallbackQuery,
+                           callback_data: SimpleCalendarCallback,
+                           state: FSMContext,
+                           expense_base,
+                           bot):
+    data = await state.get_data()
+    from_date = data['from_date']
+    first_id = data['first_id']
+    mode = data['mode']
+    calendar = SimpleCalendar(show_alerts=True)
+    calendar.set_dates_range(from_date, datetime.now())
+    selected, date = await calendar.process_selection(callback, callback_data)
+    if selected:
+        if mode == 'chat':
+            await callback.message.edit_text(
+                text=f'📆 {from_date.strftime("%-d %B %Y")} - {date.strftime("%-d %B %Y")}\n\n'
+                     f'{get_sum(from_date, date, expense_base)}',
+                reply_markup=create_inline_kb(1, leave='Оставить в чате', delete='Удалить')
+            )
+            await bot.delete_message(chat_id=callback.message.chat.id,
+                                     message_id=first_id)
+            await state.set_state(GetSumFSM.leave_or_delete)
+        if mode == 'xl':
+            file = make_xlsx(from_date, date, expense_base)
+            await callback.message.answer_document(document=file,
+                                                   caption=f'📆 {from_date.strftime("%-d %B %Y")}'
+                                                           f' - {date.strftime("%-d %B %Y")}\n')
+            await bot.delete_messages(chat_id=callback.message.chat.id,
+                                      message_ids=[i for i in range(first_id,
+                                                                    callback.message.message_id +1)]
+                                                                    )
+            await state.clear()
+
+
+@router.callback_query(F.data == 'leave', StateFilter(GetSumFSM.leave_or_delete))
+async def process_leave_choice(callback: CallbackQuery,
+                               state: FSMContext):
+    await callback.message.edit_text(text=callback.message.text)
+    await callback.answer(text='Как скажете 🫡')
+    await state.clear()
+
+
+@router.callback_query(F.data == 'delete', StateFilter(GetSumFSM.leave_or_delete))
+async def process_leave_choice(callback: CallbackQuery,
+                               state: FSMContext,
+                               bot):
+    await bot.delete_message(chat_id=callback.message.chat.id,
+                             message_id=callback.message.message_id)
+    await state.clear()
+
+
+@router.message(Command('xl'))
+async def process_sum_command(message: Message, state: FSMContext):
+    calendar = SimpleCalendar(show_alerts=True)
+    calendar.set_dates_range(datetime(2022, 11, 1), datetime.now())
+    await message.answer(
+        text='Откуда вспоминать?',
+        reply_markup=await calendar.start_calendar()
+    )
+    await state.set_state(GetSumFSM.choose_from)
+    await state.update_data(mode='xl')
+
+
+
+
+# bellow should be handler for answering and deleting any random message
