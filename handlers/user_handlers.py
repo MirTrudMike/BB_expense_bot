@@ -1,18 +1,20 @@
-from datetime import datetime
-from aiogram import Router, F
+from datetime import datetime, timedelta
+from aiogram import Router, F, Bot
 from aiogram.filters import Command, StateFilter
 from lexicone import LEXICON_RU, STATE_EXPLAIN
 from filters.filters import IsUser, is_float
-from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, CallbackQuery
+from aiogram.types import Message, CallbackQuery
 from aiogram_calendar import SimpleCalendar, SimpleCalendarCallback, get_user_locale
 from keyboards.inline_kb import categories_inline_kb, create_inline_kb
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from FSM.user_FSM import OldFSM, GetSumFSM
 from functions.functions import get_sum, update_base_file, make_xlsx
-from aiogram.methods.delete_messages import DeleteMessages
 from time import sleep
 from config_data.info import categories_ru, categories
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from functions.chelduler_functions import test_remind1
+import asyncio
 
 router = Router()
 router.message.filter(IsUser())
@@ -69,12 +71,6 @@ async def calendar_process(callback_query: CallbackQuery, callback_data: SimpleC
             reply_markup=categories_inline_kb
         )
         await state.set_state(OldFSM.choose_group)
-
-
-# Not really needed
-# @router.message(StateFilter(OldFSM.choose_date))
-# async def expect_date_warning(message: Message):
-#     await message.answer(text=LEXICON_RU['date_expected_warning'])
 
 
 @router.callback_query(F.data.in_(categories), StateFilter(OldFSM.choose_group))
@@ -205,6 +201,18 @@ async def process_one_more(callback: CallbackQuery, state: FSMContext):
         await callback.message.delete_reply_markup()
         await state.set_state(OldFSM.choose_date)
 
+    if input_type == 'yesterday':
+        date = datetime.now() - timedelta(days=1)
+        await state.update_data(input_type='yesterday',
+                                date=date.strftime("%-d %B %Y"),
+                                text=f'📆 {date.strftime("%-d %B %Y")}',
+                                first_id=callback.message.message_id + 1)
+        await callback.message.answer(text=f'📆 {date.strftime("%-d %B %Y")}\n\n'
+                                           f'Выбери категорию 👇🏽',
+                                      reply_markup=categories_inline_kb)
+        await callback.message.delete_reply_markup()
+        await state.set_state(OldFSM.choose_group)
+
 
 @router.callback_query(F.data == 'done', StateFilter(OldFSM.more_or_done))
 async def process_done(callback: CallbackQuery, state: FSMContext):
@@ -323,15 +331,40 @@ async def process_sum_command(message: Message, state: FSMContext):
     await state.update_data(mode='xl')
 
 
+@router.callback_query(F.data == 'ask_decline')
+async def process_ask_decline(callback: CallbackQuery, bot):
+    await callback.message.edit_text(text='Супер! 😘')
+    await asyncio.sleep(2)
+    await bot.delete_message(chat_id=callback.message.chat.id,
+                             message_id=callback.message.message_id
+                             )
 
 
-# bellow should be handler for answering and deleting any random message
+@router.callback_query(F.data == 'yesterday_yes')
+async def process_yesterday_yes(callback: CallbackQuery, state: FSMContext):
+    date = datetime.now() - timedelta(days=1)
+    await state.set_state(OldFSM.choose_group)
+    await state.update_data(date=date.strftime("%-d %B %Y"),
+                            text=f'📆 {date.strftime("%-d %B %Y")}',
+                            first_id=callback.message.message_id,
+                            input_type='yesterday')
+    await callback.message.edit_text(
+        text=f'📆 {date.strftime("%-d %B %Y")}\n\n'
+             f'Давай вспомним какие:',
+        reply_markup=categories_inline_kb
+    )
+
+
+# bellow are handler for answering and deleting any random message
+# bellow are handler for answering and deleting any random message
+# bellow are handler for answering and deleting any random message
 @router.message()
 async def process_random_message(message: Message):
     await message.answer(text='Это не то, чего я жду 🥶',
                          reply_markup=create_inline_kb(1,
                                                        understand='🫶🏽 Понятно',
                                                        dont_understand='🤯 Объясни почему'))
+
 
 @router.callback_query(F.data == 'understand')
 async def process_understand_button(callback: CallbackQuery, bot):
@@ -345,4 +378,12 @@ async def process_understand_button(callback: CallbackQuery, bot):
 async def process_dont_understand(callback: CallbackQuery, state: FSMContext, bot):
     status = await state.get_state()
     await callback.message.edit_text(text=STATE_EXPLAIN[status],
+                                     reply_markup=create_inline_kb(1, understand='Теперь\nпонятно 🫶'))
+
+
+@router.callback_query(F.data == 'dont_understand', StateFilter(default_state))
+async def process_dont_understand(callback: CallbackQuery, state: FSMContext, bot):
+    status = await state.get_state()
+    await callback.message.edit_text(text='Честно говоря, я пока понимаю не любые сообщения 😭\n'
+                                          'Но зато отлично разбираюсь с командами из меню!',
                                      reply_markup=create_inline_kb(1, understand='Теперь\nпонятно 🫶'))
