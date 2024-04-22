@@ -43,6 +43,7 @@ def make_xlsx(from_date, to_date, base):
     df.columns = ['Date', 'Category', 'Amount', 'Comment']
     df['Date'] = np.vectorize(lambda s: datetime.strptime(s, '%d %B %Y'))(df['Date'])
     df = df.sort_values('Date')
+    df = df[(df['Date'] >= from_date) & (df['Date'] <= to_date)]
     df['Date'] = df['Date'].apply(lambda d: d.strftime('%-d %B %Y').ljust(2))
     df.to_excel(f"{os.path.abspath('./xlsx_reports')}/{file_name}", index=False)
     file = FSInputFile(f"{os.path.abspath('./xlsx_reports')}/{file_name}")

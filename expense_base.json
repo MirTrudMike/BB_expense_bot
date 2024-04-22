@@ -249,5 +249,12 @@
         "category": "Special",
         "amount": 678.0,
         "comment": null
+    },
+    {
+        "input_type": "category_button",
+        "date": "22 April 2024",
+        "category": "ND",
+        "amount": 578.0,
+        "comment": null
     }
 ]
