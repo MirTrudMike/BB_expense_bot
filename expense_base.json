@@ -305,5 +305,19 @@
         "category": "f%b",
         "amount": 6782.0,
         "comment": null
+    },
+    {
+        "input_type": "new",
+        "date": "23 April 2024",
+        "category": "f%b",
+        "amount": 678.0,
+        "comment": null
+    },
+    {
+        "input_type": "category_button",
+        "date": "23 April 2024",
+        "category": "salary",
+        "amount": 678.0,
+        "comment": null
     }
 ]

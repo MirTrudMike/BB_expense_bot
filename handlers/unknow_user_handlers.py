@@ -13,6 +13,7 @@ from keyboards.inline_kb import create_inline_kb
 from keyboards.regular_kb import reg_categories_kb
 from functions.chelduler_functions import set_schedulers
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from functions.set_menu import set_main_menu
 
 router = Router()
 router.message.filter(IsUnknown())
@@ -69,10 +70,11 @@ async def give_instructions(callback: CallbackQuery,
                                        '......',
                                   reply_markup=reg_categories_kb.as_markup())
 
+    await set_main_menu(bot)
+
     await bot.delete_messages(chat_id=callback.message.chat.id,
                               message_ids=[i for i in range(first_id,
-                                                            callback.message.message_id + 1)]
-                              )
+                                                            callback.message.message_id + 1)])
     await state.clear()
 
     set_schedulers(bot=bot, user_ids=[user_id,], scheduler=apscheduler)
