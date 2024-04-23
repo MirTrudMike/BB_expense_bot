@@ -8,7 +8,7 @@ from aiogram_calendar import SimpleCalendar, SimpleCalendarCallback, get_user_lo
 from keyboards.inline_kb import categories_inline_kb, create_inline_kb
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
-from FSM.user_FSM import OldFSM, GetSumFSM
+from FSM.FSM_states import OldFSM, GetSumFSM
 from functions.functions import get_sum, update_base_file, make_xlsx
 from time import sleep
 from config_data.info import categories_ru, categories

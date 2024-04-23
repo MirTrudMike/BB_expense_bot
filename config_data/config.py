@@ -14,6 +14,7 @@ class TgBot:
     token: str
     user_ids: list[int]
     admin_ids: list[int]
+    blocked_ids: list[int]
     password: str
 
 @dataclass
@@ -31,6 +32,7 @@ def load_config(path):
             token=env('BOT_TOKEN'),
             admin_ids=list(map(int, env.list('ADMIN_IDS'))),
             user_ids=list(map(int, env.list('USER_IDS'))),
+            blocked_ids=list(map(int, env.list('BLOCKED_IDS'))),
             password=env('PASSWORD')
         ),
         expense_base=load_base()

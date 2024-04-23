@@ -14,6 +14,11 @@ class IsUser(BaseFilter):
         return message.from_user.id in user_ids
 
 
+class IsBlocked(BaseFilter):
+    async def __call__(self, message: Message, blocked_ids):
+        return message.from_user.id in blocked_ids
+
+
 def is_float(message: Message):
     try:
         float(message.text.strip())

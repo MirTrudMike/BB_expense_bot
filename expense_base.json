@@ -256,5 +256,47 @@
         "category": "ND",
         "amount": 578.0,
         "comment": null
+    },
+    {
+        "input_type": "category_button",
+        "date": "23 April 2024",
+        "category": "f%b",
+        "amount": 678.0,
+        "comment": null
+    },
+    {
+        "input_type": "category_button",
+        "date": "23 April 2024",
+        "category": "Special",
+        "amount": 567.0,
+        "comment": "Jkkk"
+    },
+    {
+        "input_type": "category_button",
+        "date": "23 April 2024",
+        "category": "service",
+        "amount": 568.0,
+        "comment": null
+    },
+    {
+        "date": "22 April 2024",
+        "input_type": "yesterday",
+        "category": "Special",
+        "amount": 578.0,
+        "comment": null
+    },
+    {
+        "input_type": "category_button",
+        "date": "23 April 2024",
+        "category": "f%b",
+        "amount": 678.0,
+        "comment": null
+    },
+    {
+        "date": "22 April 2024",
+        "input_type": "yesterday",
+        "category": "HH items",
+        "amount": 6738.0,
+        "comment": null
     }
 ]

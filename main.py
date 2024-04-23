@@ -9,7 +9,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from middleware.apschadulermiddleware import SchedulerMiddleware
 from aiogram.fsm.storage.memory import MemoryStorage
 from config_data.config import Config, load_config
-from handlers import unknow_user_handlers, user_handlers
+from handlers import unknow_user_handlers, user_handlers, blocked_users_handlers
 from functions.chelduler_functions import set_schedulers
 from keyboards.regular_kb import reg_categories_kb
 
@@ -25,16 +25,18 @@ dp.workflow_data.update(
         'password': config.tg_bot.password,
         'user_ids': config.tg_bot.user_ids,
         'admin_ids': config.tg_bot.admin_ids,
-        'expense_base': config.expense_base
+        'expense_base': config.expense_base,
+        'blocked_ids': config.tg_bot.blocked_ids
     }
 )
 
 
-@dp.message(Command('start'))
-async def open_kd(message: Message):
-    await message.answer(text='Vot:',
-                         reply_markup=reg_categories_kb.as_markup())
+# @dp.message(Command('start'))
+# async def open_kd(message: Message):
+#     await message.answer(text='Vot:',
+#                          reply_markup=reg_categories_kb.as_markup())
 
+dp.include_router(blocked_users_handlers.router)
 dp.include_router(unknow_user_handlers.router)
 dp.include_router(user_handlers.router)
 

@@ -15,6 +15,14 @@ def write_user_to_env(id):
         file.writelines(text)
 
 
+def write_user_to_block(id):
+    with open('.env', mode='r') as file:
+        text = file.readlines()
+        text[-2] = text[-2].strip() + f',{str(id)}\n'
+    with open('.env', mode='w') as file:
+        file.writelines(text)
+
+
 def decorate_expense(expense_dict):
     decorated_string = (f"📆 {expense_dict['date']}\n"
          f"{LEXICON_RU[expense_dict['category']]}\n"

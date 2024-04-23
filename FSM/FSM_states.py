@@ -16,3 +16,8 @@ class GetSumFSM(StatesGroup):
     choose_to = State()
     leave_or_delete = State()
 
+
+class PassTryFSM(StatesGroup):
+    input_pass = State()
+    get_informed = State()
+

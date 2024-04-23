@@ -18,14 +18,14 @@ async def ask_yesterday(bot: Bot, user_id: int):
                            )
 
 
-def set_schedulers(bot: Bot,user_ids: list, scheduler: AsyncIOScheduler):
+def set_schedulers(bot: Bot, user_ids: list, scheduler: AsyncIOScheduler):
     for user in user_ids:
         try:
             scheduler.add_job(ask_yesterday,
                               trigger='cron',
-                              day="22",
-                              hour="19",
-                              minute="15",
+                              day="23",
+                              hour="4",
+                              minute="19",
                               kwargs={'bot': bot,
                                       'user_id': user}
                           )
