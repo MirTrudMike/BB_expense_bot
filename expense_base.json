@@ -5,13 +5,5 @@
         "amount": null,
         "comment": null,
         "index": 1
-    },
-    {
-        "input_type": "category_button",
-        "date": "23 April 2024",
-        "category": "service",
-        "amount": 678.0,
-        "comment": null,
-        "index": 1
     }
 ]
