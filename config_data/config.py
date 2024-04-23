@@ -20,7 +20,6 @@ class TgBot:
 @dataclass
 class Config:
     tg_bot: TgBot
-    expense_base: list
 
 
 def load_config(path):
@@ -34,6 +33,5 @@ def load_config(path):
             user_ids=list(map(int, env.list('USER_IDS'))),
             blocked_ids=list(map(int, env.list('BLOCKED_IDS'))),
             password=env('PASSWORD')
-        ),
-        expense_base=load_base()
+        )
     )

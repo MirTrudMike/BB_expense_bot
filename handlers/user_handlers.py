@@ -9,7 +9,7 @@ from keyboards.inline_kb import categories_inline_kb, create_inline_kb
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from FSM.FSM_states import OldFSM, GetSumFSM
-from functions.functions import get_sum, update_base_file, make_xlsx
+from functions.functions import get_sum, update_base, make_xlsx, load_base
 from time import sleep
 from config_data.info import categories_ru, categories
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -126,9 +126,10 @@ async def process_comment(message: Message, state: FSMContext):
 
 
 @router.callback_query(F.data == 'save', StateFilter(OldFSM.save))
-async def save_with_comment(callback: CallbackQuery, state: FSMContext, expense_base, bot: Bot, admin_id):
-    index = expense_base[0]['index'] + 1
-    expense_base[0]['index'] = index
+async def save_with_comment(callback: CallbackQuery, state: FSMContext, bot: Bot, admin_id):
+    base = load_base()
+    index = base[0]['index'] + 1
+    base[0]['index'] = index
     await state.update_data(index=index)
     data = await state.get_data()
     text = data['text']
@@ -136,8 +137,8 @@ async def save_with_comment(callback: CallbackQuery, state: FSMContext, expense_
     input_type = data['input_type']
     del data['text']
     del data['first_id']
-    expense_base.append(data)
-    update_base_file(expense_base)
+    base.append(data)
+    update_base(base)
     await bot.send_message(chat_id=admin_id,
                            text=f"#{index}\n\n{text}")
     if input_type != 'category_button':
@@ -155,9 +156,10 @@ async def save_with_comment(callback: CallbackQuery, state: FSMContext, expense_
 
 
 @router.callback_query(F.data == 'save', StateFilter(OldFSM.save_or_comment))
-async def save_no_comment(callback: CallbackQuery, state: FSMContext, expense_base, bot, admin_id):
-    index = expense_base[0]['index'] + 1
-    expense_base[0]['index'] = index
+async def save_no_comment(callback: CallbackQuery, state: FSMContext, bot, admin_id):
+    base = load_base()
+    index = base[0]['index'] + 1
+    base[0]['index'] = index
     await state.update_data(comment=None,
                             index=index)
     data = await state.get_data()
@@ -166,8 +168,8 @@ async def save_no_comment(callback: CallbackQuery, state: FSMContext, expense_ba
     input_type = data['input_type']
     del data['text']
     del data['first_id']
-    expense_base.append(data)
-    update_base_file(expense_base)
+    base.append(data)
+    update_base(base)
     await bot.send_message(chat_id=admin_id,
                            text=f"#{index}\n\n{text}")
     if input_type != 'category_button':
@@ -281,7 +283,6 @@ async def process_start_date(callback: CallbackQuery, callback_data: SimpleCalen
 async def process_end_date(callback: CallbackQuery,
                            callback_data: SimpleCalendarCallback,
                            state: FSMContext,
-                           expense_base,
                            bot):
     data = await state.get_data()
     from_date = data['from_date']
@@ -292,41 +293,65 @@ async def process_end_date(callback: CallbackQuery,
     selected, date = await calendar.process_selection(callback, callback_data)
     if selected:
         if mode == 'chat':
-            decorated_text = get_sum(from_date, date, expense_base)
-            if decorated_text:
-                await callback.message.edit_text(
-                    text=f'📆 {from_date.strftime("%-d %B %Y")} - {date.strftime("%-d %B %Y")}\n\n'
-                         f'{decorated_text}',
-                    reply_markup=create_inline_kb(1, leave='Оставить в чате', delete='Удалить')
-                )
-                await bot.delete_message(chat_id=callback.message.chat.id,
-                                         message_id=first_id)
-                await state.set_state(GetSumFSM.leave_or_delete)
+            try:
+                decorated_text = get_sum(from_date, date)
+                if decorated_text:
+                    await callback.message.edit_text(
+                        text=f'📆 {from_date.strftime("%-d %B %Y")} - {date.strftime("%-d %B %Y")}\n\n'
+                             f'{decorated_text}',
+                        reply_markup=create_inline_kb(1, leave='Оставить в чате', delete='Удалить')
+                    )
+                    await bot.delete_message(chat_id=callback.message.chat.id,
+                                             message_id=first_id)
+                    await state.set_state(GetSumFSM.leave_or_delete)
 
-            else:
+                else:
+                    await callback.message.edit_text(
+                        text=f'📆 {from_date.strftime("%-d %B %Y")} - {date.strftime("%-d %B %Y")}\n\n'
+                             f'Там полный ноль по всем пунктам 🙆🏽‍♂️',
+                        reply_markup=create_inline_kb(1, delete='Хорошо')
+                                                    )
+                    await bot.delete_message(chat_id=callback.message.chat.id,
+                                             message_id=first_id)
+
+                    await state.set_state(GetSumFSM.leave_or_delete)
+
+            except:
                 await callback.message.edit_text(
                     text=f'📆 {from_date.strftime("%-d %B %Y")} - {date.strftime("%-d %B %Y")}\n\n'
                          f'Там полный ноль по всем пунктам 🙆🏽‍♂️',
                     reply_markup=create_inline_kb(1, delete='Хорошо')
-                                                )
+                )
                 await bot.delete_message(chat_id=callback.message.chat.id,
                                          message_id=first_id)
 
                 await state.set_state(GetSumFSM.leave_or_delete)
 
         if mode == 'xl':
-            file = make_xlsx(from_date, date, expense_base)
-            if file:
-                await callback.message.answer_document(document=file,
-                                                       caption=f'📆 {from_date.strftime("%-d %B %Y")}'
-                                                               f' - {date.strftime("%-d %B %Y")}\n')
-                await bot.delete_messages(chat_id=callback.message.chat.id,
-                                          message_ids=[i for i in range(first_id,
-                                                                        callback.message.message_id +1)]
-                                                                        )
-                await state.clear()
+            try:
+                file = make_xlsx(from_date, date)
+                if file:
+                    await callback.message.answer_document(document=file,
+                                                           caption=f'📆 {from_date.strftime("%-d %B %Y")}'
+                                                                   f' - {date.strftime("%-d %B %Y")}\n')
+                    await bot.delete_messages(chat_id=callback.message.chat.id,
+                                              message_ids=[i for i in range(first_id,
+                                                                            callback.message.message_id +1)]
+                                                                            )
+                    await state.clear()
 
-            else:
+                else:
+                    await callback.message.edit_text(
+                        text=f'📆 {from_date.strftime("%-d %B %Y")} - {date.strftime("%-d %B %Y")}\n\n'
+                             f'Там полный ноль по всем пунктам 🙆🏽‍♂️',
+                        reply_markup=create_inline_kb(1, delete='Хорошо')
+                    )
+                    await bot.delete_message(chat_id=callback.message.chat.id,
+                                             message_id=first_id)
+
+                    await state.set_state(GetSumFSM.leave_or_delete)
+
+            except:
                 await callback.message.edit_text(
                     text=f'📆 {from_date.strftime("%-d %B %Y")} - {date.strftime("%-d %B %Y")}\n\n'
                          f'Там полный ноль по всем пунктам 🙆🏽‍♂️',

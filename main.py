@@ -2,9 +2,6 @@ import asyncio
 import logging
 import sys
 from aiogram import Bot, Dispatcher
-from aiogram.filters import Command
-from aiogram.types import Message
-from aiogram.enums import ParseMode
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from middleware.apschadulermiddleware import SchedulerMiddleware
 from aiogram.fsm.storage.memory import MemoryStorage
@@ -24,16 +21,9 @@ dp.workflow_data.update(
         'password': config.tg_bot.password,
         'user_ids': config.tg_bot.user_ids,
         'admin_id': config.tg_bot.admin_ids[-1],
-        'expense_base': config.expense_base,
         'blocked_ids': config.tg_bot.blocked_ids
     }
 )
-
-
-# @dp.message(Command('start'))
-# async def open_kd(message: Message):
-#     await message.answer(text='Vot:',
-#                          reply_markup=reg_categories_kb.as_markup())
 
 dp.include_router(admin_handlers.router)
 dp.include_router(blocked_users_handlers.router)

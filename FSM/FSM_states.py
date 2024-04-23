@@ -25,4 +25,6 @@ class PassTryFSM(StatesGroup):
 class AdminFSM(StatesGroup):
     input_index = State()
     confirm_del = State()
+    confirm_restore_base = State()
+
 
