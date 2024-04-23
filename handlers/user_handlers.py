@@ -4,7 +4,7 @@ from aiogram.filters import Command, StateFilter
 from lexicone import LEXICON_RU, STATE_EXPLAIN
 from filters.filters import IsUser, is_float
 from aiogram.types import Message, CallbackQuery
-from aiogram_calendar import SimpleCalendar, SimpleCalendarCallback, get_user_locale
+from aiogram_calendar import SimpleCalendar, SimpleCalendarCallback
 from keyboards.inline_kb import categories_inline_kb, create_inline_kb
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
@@ -126,7 +126,10 @@ async def process_comment(message: Message, state: FSMContext):
 
 
 @router.callback_query(F.data == 'save', StateFilter(OldFSM.save))
-async def save_with_comment(callback: CallbackQuery, state: FSMContext, expense_base, bot):
+async def save_with_comment(callback: CallbackQuery, state: FSMContext, expense_base, bot: Bot, admin_id):
+    index = expense_base[0]['index'] + 1
+    expense_base[0]['index'] = index
+    await state.update_data(index=index)
     data = await state.get_data()
     text = data['text']
     first_id = data['first_id']
@@ -135,6 +138,8 @@ async def save_with_comment(callback: CallbackQuery, state: FSMContext, expense_
     del data['first_id']
     expense_base.append(data)
     update_base_file(expense_base)
+    await bot.send_message(chat_id=admin_id,
+                           text=f"#{index}\n\n{text}")
     if input_type != 'category_button':
         await callback.message.edit_text(text=f"{text}\n\n{LEXICON_RU['done']}",
                                          reply_markup=create_inline_kb(1, more='Есть ещё 👻', done='Пока всё 🫱🏽‍🫲🏾'))
@@ -150,8 +155,11 @@ async def save_with_comment(callback: CallbackQuery, state: FSMContext, expense_
 
 
 @router.callback_query(F.data == 'save', StateFilter(OldFSM.save_or_comment))
-async def save_no_comment(callback: CallbackQuery, state: FSMContext, expense_base, bot):
-    await state.update_data(comment=None)
+async def save_no_comment(callback: CallbackQuery, state: FSMContext, expense_base, bot, admin_id):
+    index = expense_base[0]['index'] + 1
+    expense_base[0]['index'] = index
+    await state.update_data(comment=None,
+                            index=index)
     data = await state.get_data()
     text = data['text']
     first_id = data['first_id']
@@ -160,6 +168,8 @@ async def save_no_comment(callback: CallbackQuery, state: FSMContext, expense_ba
     del data['first_id']
     expense_base.append(data)
     update_base_file(expense_base)
+    await bot.send_message(chat_id=admin_id,
+                           text=f"#{index}\n\n{text}")
     if input_type != 'category_button':
         await callback.message.edit_text(text=f"{text}\n\n{LEXICON_RU['done']}",
                                          reply_markup=create_inline_kb(1, more='Есть ещё 👻', done='Пока всё 🫱🏽‍🫲🏾'))

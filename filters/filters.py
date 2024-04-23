@@ -4,8 +4,13 @@ from aiogram.types import Message
 
 # UnKnown user
 class IsUnknown(BaseFilter):
-    async def __call__(self, message: Message, admin_ids, user_ids):
-        return message.from_user.id not in (admin_ids + user_ids)
+    async def __call__(self, message: Message, admin_id, user_ids):
+        return message.from_user.id not in user_ids and message.from_user.id != admin_id
+
+
+class IsAdmin(BaseFilter):
+    async def __call__(self, message: Message, admin_id, user_ids):
+        return message.from_user.id == admin_id
 
 
 # Is in authorised user list
@@ -25,3 +30,12 @@ def is_float(message: Message):
         return True
     except ValueError:
         return False
+
+
+def is_int(message: Message):
+    try:
+        int(message.text.strip())
+        return True
+    except ValueError:
+        return False
+

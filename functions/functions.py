@@ -64,4 +64,19 @@ def make_xlsx(from_date, to_date, base):
         return None
 
 
-print(os.path.abspath('../xlsx_reports/'))
+def find_expense_index_in_base(index):
+    with open('expense_base.json') as file:
+        expense_base = json.load(file)
+    one = list(filter(lambda d: d['index'] == index, expense_base))[-1]
+    base_index = expense_base.index(one)
+    return base_index
+
+
+def delete_record_by_base_index(base_index):
+    with open('expense_base.json', mode='r') as file:
+        base = json.load(file)
+    base.pop(base_index)
+    with open('expense_base.json', mode='w') as file:
+        json.dump(base, file, indent=4, ensure_ascii=False)
+
+

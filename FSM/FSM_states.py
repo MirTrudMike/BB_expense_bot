@@ -21,3 +21,8 @@ class PassTryFSM(StatesGroup):
     input_pass = State()
     get_informed = State()
 
+
+class AdminFSM(StatesGroup):
+    input_index = State()
+    confirm_del = State()
+
