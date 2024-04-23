@@ -60,21 +60,51 @@ async def give_instructions(callback: CallbackQuery,
                             user_ids: list,
                             bot: Bot,
                             apscheduler: AsyncIOScheduler):
+    chat_id = callback.message.chat.id
     data = await state.get_data()
     first_id = data['first_id']
     user_id = data['user_id']
     user_ids.append(user_id)
     write_user_to_env(user_id)
-    await callback.message.answer(text='Вот теперь давайте дружить!\n'
-                                       'Вот полный список того, что я умею:'
-                                       '......',
-                                  reply_markup=reg_categories_kb.as_markup())
-
+    await asyncio.sleep(3)
     await set_main_menu(bot)
 
-    await bot.delete_messages(chat_id=callback.message.chat.id,
-                              message_ids=[i for i in range(first_id,
-                                                            callback.message.message_id + 1)])
+    await bot.delete_messages(chat_id=chat_id,
+                              message_ids=[first_id,
+                                           first_id + 1,
+                                           first_id + 2,
+                                           first_id + 4])
+
+    await bot.edit_message_text(chat_id=chat_id,
+                                message_id=first_id + 3,
+                                text="Вот теперь давай расскажу, что я на самом деле умею!\n\n"
+                                     "Через 5 секунд внизу появится быстрые кнопки ↘️")
+    await asyncio.sleep(5)
+
+    for i in range(4,0,-1):
+        await bot.edit_message_text(chat_id=chat_id,
+                                    message_id=first_id + 3,
+                                    text=f"Вот теперь давай расскажу, что я на самом деле умею!\n\n"
+                                         f"Через {i} секунд внизу появится быстрые кнопки ↘️")
+        await asyncio.sleep(2)
+
+    await bot.delete_message(chat_id=chat_id,
+                             message_id=first_id + 3)
+
+    await bot.send_message(chat_id=chat_id,
+                           text=f"Вот они ↘️",
+                           reply_markup=reg_categories_kb.as_markup())
+
+    await asyncio.sleep(4)
+
+    await bot.send_message(chat_id=chat_id,
+                           text=f"↙️ А здесь меню со всеми командами которые я пока знаю.")
+
+    await asyncio.sleep(4)
+
+    await bot.send_message(chat_id=chat_id,
+                           text=f"🧛🏼‍♂️ И еще я буду иногда напоминать о себе, и приставать с вопросами")
+
     await state.clear()
 
     set_schedulers(bot=bot, user_ids=[user_id,], scheduler=apscheduler)

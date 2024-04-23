@@ -4,6 +4,14 @@
         "category": null,
         "amount": null,
         "comment": null,
-        "index": 0
+        "index": 1
+    },
+    {
+        "date": "23 April 2024",
+        "input_type": "yesterday",
+        "category": "HH items",
+        "amount": 578.0,
+        "comment": null,
+        "index": 1
     }
 ]

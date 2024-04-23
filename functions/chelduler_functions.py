@@ -23,8 +23,8 @@ def set_schedulers(bot: Bot, user_ids: list, scheduler: AsyncIOScheduler):
         try:
             scheduler.add_job(ask_yesterday,
                               trigger='cron',
-                              hour="8",
-                              minute="15",
+                              hour="10",
+                              minute="30",
                               kwargs={'bot': bot,
                                       'user_id': user}
                           )

@@ -1,0 +1,15 @@
+.env
+.venv/
+.idea/
+testing.py
+__pycache__/
+keyboards/__pycache__/regular_kb.cpython-310.pyc
+handlers/__pycache__/user_handlers.cpython-310.pyc
+functions/__pycache__/functions.cpython-310.pyc
+FSM/__pycache__/user_FSM.cpython-310.pyc
+config_data/__pycache__/config.cpython-310.pyc
+filters/__pycache__/filters.cpython-310.pyc
+handlers/__pycache__/unknow_user_handlers.cpython-310.pyc
+config_data/__pycache__/info.cpython-310.pyc
+xlsx_reports
+expense_base.json
