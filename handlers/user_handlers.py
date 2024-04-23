@@ -6,6 +6,7 @@ from filters.filters import IsUser, is_float
 from aiogram.types import Message, CallbackQuery
 from aiogram_calendar import SimpleCalendar, SimpleCalendarCallback
 from keyboards.inline_kb import categories_inline_kb, create_inline_kb
+from keyboards.regular_kb import reg_categories_kb
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from FSM.FSM_states import OldFSM, GetSumFSM
@@ -414,6 +415,12 @@ async def process_yesterday_yes(callback: CallbackQuery, state: FSMContext):
              f'Давай вспомним какие:',
         reply_markup=categories_inline_kb
     )
+
+
+@router.message(Command('help'))
+async def process_help_command(message: Message):
+    await message.answer(text="..in progress..",
+                         reply_markup=reg_categories_kb.as_markup())
 
 
 # bellow are handler for answering and deleting any random message
