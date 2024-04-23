@@ -298,5 +298,12 @@
         "category": "HH items",
         "amount": 6738.0,
         "comment": null
+    },
+    {
+        "input_type": "new",
+        "date": "23 April 2024",
+        "category": "f%b",
+        "amount": 6782.0,
+        "comment": null
     }
 ]

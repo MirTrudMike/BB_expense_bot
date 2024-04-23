@@ -37,12 +37,15 @@ def update_base_file(base: list):
 
 def get_sum(from_date, to_date, base):
     s = 'Посчитал:\n'
-    df = df = pd.DataFrame(base[1:])
+    df = pd.DataFrame(base[1:])
     df['date'] = np.vectorize(lambda s: datetime.strptime(s, '%d %B %Y'))(df['date'])
-    result = df[(df['date'] >= from_date) & (df['date'] <= to_date)].groupby('category').sum(numeric_only=True)
-    for category in result.sort_values('amount', ascending=False).index:
-        s += f"\n{LEXICON_RU[category]}: {result.loc[category]['amount']}"
-    return s
+    df = df[(df['date'] >= from_date) & (df['date'] <= to_date)]
+    result = df.groupby('category').sum(numeric_only=True)
+    if len(df) > 0:
+        for category in result.sort_values('amount', ascending=False).index:
+            s += f"\n{LEXICON_RU[category]}: {result.loc[category]['amount']}"
+        return s
+    else: return None
 
 
 def make_xlsx(from_date, to_date, base):
@@ -52,10 +55,13 @@ def make_xlsx(from_date, to_date, base):
     df['Date'] = np.vectorize(lambda s: datetime.strptime(s, '%d %B %Y'))(df['Date'])
     df = df.sort_values('Date')
     df = df[(df['Date'] >= from_date) & (df['Date'] <= to_date)]
-    df['Date'] = df['Date'].apply(lambda d: d.strftime('%-d %B %Y').ljust(2))
-    df.to_excel(f"{os.path.abspath('./xlsx_reports')}/{file_name}", index=False)
-    file = FSInputFile(f"{os.path.abspath('./xlsx_reports')}/{file_name}")
-    return file
+    if len(df) > 0:
+        df['Date'] = df['Date'].apply(lambda d: d.strftime('%-d %B %Y').ljust(2))
+        df.to_excel(f"{os.path.abspath('./xlsx_reports')}/{file_name}", index=False)
+        file = FSInputFile(f"{os.path.abspath('./xlsx_reports')}/{file_name}")
+        return file
+    else:
+        return None
 
 
 print(os.path.abspath('../xlsx_reports/'))
