@@ -97,7 +97,9 @@ def restore_base():
         "category": None,
         "amount": None,
         "comment": None,
-        "index": 0}]
+        "index": 0,
+        "user": None
+    }]
 
     with open('expense_base.json', mode='w') as file:
         json.dump(empty_base, file, indent=4)
