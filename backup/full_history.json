@@ -1,0 +1,154 @@
+[
+    {
+        "date": null,
+        "category": null,
+        "amount": null,
+        "comment": null,
+        "index": 16,
+        "user": null
+    },
+    {
+        "input_type": "old",
+        "date": "24 April 2024",
+        "category": "f%b",
+        "amount": 145.0,
+        "comment": null,
+        "index": 1,
+        "user": 6497600890
+    },
+    {
+        "input_type": "old",
+        "date": "2 April 2024",
+        "category": "f%b",
+        "amount": 149.0,
+        "comment": null,
+        "index": 2,
+        "user": 6497600890
+    },
+    {
+        "input_type": "old",
+        "date": "4 April 2024",
+        "category": "HH items",
+        "amount": 90.0,
+        "comment": "Намотрасник стафф",
+        "index": 3,
+        "user": 6497600890
+    },
+    {
+        "input_type": "old",
+        "date": "4 April 2024",
+        "category": "HH items",
+        "amount": 34.0,
+        "comment": null,
+        "index": 4,
+        "user": 6497600890
+    },
+    {
+        "input_type": "old",
+        "date": "4 April 2024",
+        "category": "f%b",
+        "amount": 227.0,
+        "comment": null,
+        "index": 5,
+        "user": 6497600890
+    },
+    {
+        "input_type": "old",
+        "date": "10 April 2024",
+        "category": "bar",
+        "amount": 160.2,
+        "comment": null,
+        "index": 6,
+        "user": 6497600890
+    },
+    {
+        "input_type": "old",
+        "date": "13 April 2024",
+        "category": "f%b",
+        "amount": 237.0,
+        "comment": null,
+        "index": 7,
+        "user": 6497600890
+    },
+    {
+        "input_type": "old",
+        "date": "13 April 2024",
+        "category": "bar",
+        "amount": 72.6,
+        "comment": null,
+        "index": 8,
+        "user": 6497600890
+    },
+    {
+        "input_type": "old",
+        "date": "13 April 2024",
+        "category": "HH items",
+        "amount": 14.0,
+        "comment": null,
+        "index": 9,
+        "user": 6497600890
+    },
+    {
+        "input_type": "old",
+        "date": "14 April 2024",
+        "category": "HH items",
+        "amount": 75.6,
+        "comment": null,
+        "index": 10,
+        "user": 6497600890
+    },
+    {
+        "input_type": "old",
+        "date": "15 April 2024",
+        "category": "f%b",
+        "amount": 35.8,
+        "comment": null,
+        "index": 11,
+        "user": 6497600890
+    },
+    {
+        "input_type": "old",
+        "date": "17 April 2024",
+        "category": "HH items",
+        "amount": 38.0,
+        "comment": "чайник",
+        "index": 12,
+        "user": 6497600890
+    },
+    {
+        "input_type": "old",
+        "date": "17 April 2024",
+        "category": "f%b",
+        "amount": 149.0,
+        "comment": null,
+        "index": 13,
+        "user": 6497600890
+    },
+    {
+        "input_type": "old",
+        "date": "17 April 2024",
+        "category": "service",
+        "amount": 50.0,
+        "comment": null,
+        "index": 14,
+        "user": 6497600890
+    },
+    {
+        "input_type": "old",
+        "date": "18 April 2024",
+        "category": "ND",
+        "amount": 100.0,
+        "comment": "Misha bank PL",
+        "index": 15,
+        "user": 6497600890
+    },
+    {
+        "input_type": "old",
+        "date": "20 April 2024",
+        "category": "service",
+        "amount": 120.0,
+        "comment": null,
+        "index": 16,
+        "user": 6497600890
+    }
+]

@@ -13,3 +13,4 @@ handlers/__pycache__/unknow_user_handlers.cpython-310.pyc
 config_data/__pycache__/info.cpython-310.pyc
 xlsx_reports
 expense_base.json
+./backup/full_history.json
