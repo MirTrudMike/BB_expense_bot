@@ -36,6 +36,14 @@ def load_base():
         return base
 
 
+def update_history(data: dict):
+    with open(f"{os.path.abspath('./backup/full_history.json')}", mode='r') as file:
+        full_history = json.load(file)
+        full_history.append(data)
+    with open(f"{os.path.abspath('./backup/full_history.json')}", mode='w') as file:
+        json.dump(full_history, file, indent=4, ensure_ascii=False)
+
+
 def update_base(base: list):
     with open('expense_base.json', mode='w') as file:
         json.dump(base, file, indent=4, ensure_ascii=False)
@@ -108,4 +116,6 @@ def restore_base():
 def get_base_to_tg():
     file = FSInputFile("expense_base.json")
     return file
+
+
 

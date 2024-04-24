@@ -10,7 +10,7 @@ from keyboards.regular_kb import reg_categories_kb
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from FSM.FSM_states import OldFSM, GetSumFSM
-from functions.functions import get_sum, update_base, make_xlsx, load_base
+from functions.functions import get_sum, update_base, make_xlsx, load_base, update_history
 from time import sleep
 from config_data.info import categories_ru, categories
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -132,13 +132,15 @@ async def save_with_comment(callback: CallbackQuery, state: FSMContext, bot: Bot
     index = base[0]['index'] + 1
     base[0]['index'] = index
     await state.update_data(index=index,
-                            user=callback.message.from_user.id)
+                            user=callback.message.from_user.id,
+                            created=datetime.now().isoformat())
     data = await state.get_data()
     text = data['text']
     first_id = data['first_id']
     input_type = data['input_type']
     del data['text']
     del data['first_id']
+    update_history(data)
     base.append(data)
     update_base(base)
     await bot.send_message(chat_id=admin_id,
@@ -164,7 +166,8 @@ async def save_no_comment(callback: CallbackQuery, state: FSMContext, bot, admin
     base[0]['index'] = index
     await state.update_data(comment=None,
                             index=index,
-                            user=callback.message.from_user.id)
+                            user=callback.message.from_user.id,
+                            created=datetime.now().isoformat())
     data = await state.get_data()
     text = data['text']
     first_id = data['first_id']
@@ -172,6 +175,7 @@ async def save_no_comment(callback: CallbackQuery, state: FSMContext, bot, admin
     del data['text']
     del data['first_id']
     base.append(data)
+    update_history(data)
     update_base(base)
     await bot.send_message(chat_id=admin_id,
                            text=f"#{index}\n\n{text}")
