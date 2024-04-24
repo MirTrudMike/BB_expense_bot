@@ -105,4 +105,7 @@ def restore_base():
         json.dump(empty_base, file, indent=4)
 
 
+def get_base_to_tg():
+    file = FSInputFile("expense_base.json")
+    return file
 

@@ -6,7 +6,7 @@ from filters.filters import IsAdmin, is_int
 from aiogram import F
 from functions.functions import decorate_expense
 from functions.functions import find_expense_index_in_base, delete_record_by_base_index
-from functions.functions import load_base, restore_base
+from functions.functions import load_base, restore_base, get_base_to_tg
 from FSM.FSM_states import AdminFSM
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
@@ -88,6 +88,13 @@ async def process_restore_base_confirm(callback: CallbackQuery, state: FSMContex
     await state.clear()
 
 
+@router.message(Command('get_base_json', prefix='.'))
+async def process_get_json(message: Message, bot: Bot):
+    file = get_base_to_tg()
+    await message.answer_document(document=file,
+                                  caption='Full base at the moment')
+    await bot.delete_message(chat_id=message.chat.id,
+                             message_id=message.message_id)
 
 
 
