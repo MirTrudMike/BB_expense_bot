@@ -59,7 +59,7 @@ def get_sum(from_date, to_date):
     result = df.groupby('category').sum(numeric_only=True)
     if len(df) > 0:
         for category in result.sort_values('amount', ascending=False).index:
-            s += f"\n{LEXICON_RU[category]}: {result.loc[category]['amount']}"
+            s += f"\n{LEXICON_RU[category]}: {round(result.loc[category]['amount'], 2)}"
         return s
     else: return None
 
