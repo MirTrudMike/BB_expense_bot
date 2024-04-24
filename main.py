@@ -8,6 +8,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from config_data.config import Config, load_config
 from handlers import unknow_user_handlers, user_handlers, blocked_users_handlers, admin_handlers
 from functions.chelduler_functions import set_schedulers
+from functions.set_menu import set_main_menu
 
 
 config: Config = load_config('.env')
@@ -38,6 +39,7 @@ async def main() -> None:
     dp.update.middleware(
         SchedulerMiddleware(scheduler=scheduler),
     )
+    await set_main_menu(bot)
 
     set_schedulers(bot, config.tg_bot.user_ids[1:], scheduler)
 

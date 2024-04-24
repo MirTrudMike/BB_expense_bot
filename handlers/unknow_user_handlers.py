@@ -67,7 +67,6 @@ async def give_instructions(callback: CallbackQuery,
     user_ids.append(user_id)
     write_user_to_env(user_id)
     await asyncio.sleep(3)
-    await set_main_menu(bot)
 
     await bot.delete_messages(chat_id=chat_id,
                               message_ids=[first_id,
