@@ -28,3 +28,8 @@ class AdminFSM(StatesGroup):
     confirm_restore_base = State()
 
 
+class AdminGetSumFSM(StatesGroup):
+    choose_from = State()
+    choose_to = State()
+    leave_or_delete = State()
+
