@@ -131,7 +131,8 @@ async def save_with_comment(callback: CallbackQuery, state: FSMContext, bot: Bot
     base = load_base()
     index = base[0]['index'] + 1
     base[0]['index'] = index
-    await state.update_data(index=index)
+    await state.update_data(index=index,
+                            user=callback.message.from_user.id)
     data = await state.get_data()
     text = data['text']
     first_id = data['first_id']
@@ -162,7 +163,8 @@ async def save_no_comment(callback: CallbackQuery, state: FSMContext, bot, admin
     index = base[0]['index'] + 1
     base[0]['index'] = index
     await state.update_data(comment=None,
-                            index=index)
+                            index=index,
+                            user=callback.message.from_user.id)
     data = await state.get_data()
     text = data['text']
     first_id = data['first_id']
