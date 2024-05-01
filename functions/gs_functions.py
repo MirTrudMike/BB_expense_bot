@@ -1,6 +1,7 @@
 import pygsheets
 from datetime import datetime
 import pandas as pd
+import os
 
 salaro_sheet_name = 'სალარო'
 
@@ -9,7 +10,7 @@ def create_new_month_worksheet():
     today = datetime.now()
     try:
         client = pygsheets.authorize(
-            service_account_file='/home/mirtrudmike/Downloads/bb-expense-bot-credentials.json'
+            service_account_file=f'{os.path.abspath("./config_data/bb_gs.json")}'
         )
         salaro = client.open(salaro_sheet_name)
 
