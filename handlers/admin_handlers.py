@@ -6,6 +6,7 @@ from aiogram import F
 from functions.functions import decorate_expense
 from functions.functions import find_expense_index_in_base, delete_record_by_base_index
 from functions.functions import load_base, restore_base, get_base_to_tg, get_sum, make_xlsx
+from functions.gs_functions import create_new_month_worksheet
 from FSM.FSM_states import AdminFSM, AdminGetSumFSM
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
@@ -238,3 +239,12 @@ async def process_sum_command(message: Message, state: FSMContext):
     )
     await state.set_state(AdminGetSumFSM.choose_from)
     await state.update_data(mode='xl')
+
+
+@router.message(Command('new_worksheet', prefix='.'))
+async def process_new_worksheet(message: Message):
+    if create_new_month_worksheet():
+        await message.answer(text='Done')
+
+    else:
+        await message.answer(text='ERROR')

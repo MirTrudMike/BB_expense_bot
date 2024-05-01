@@ -11,6 +11,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from FSM.FSM_states import OldFSM, GetSumFSM
 from functions.functions import get_sum, update_base, make_xlsx, load_base, update_history
+from functions.gs_functions import create_new_month_worksheet
 from time import sleep
 from config_data.info import categories_ru, categories
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -427,6 +428,19 @@ async def process_yesterday_yes(callback: CallbackQuery, state: FSMContext):
 async def process_help_command(message: Message):
     await message.answer(text="..in progress..",
                          reply_markup=reg_categories_kb.as_markup())
+
+
+@router.callback_query(F.data == 'new_worksheet_yes')
+async def process_new_worksheet_yes(callback: CallbackQuery):
+    await callback.message.edit_text('Сейчас попробую...')
+    if create_new_month_worksheet():
+        await callback.message.edit_text('Вроде всё получилось 🤟🏽\n'
+                                         'Но ты проверь 🙄',
+                                         reply_markup=create_inline_kb(1, understand='Спасибо!'))
+    else:
+        await callback.message.edit_text('Что-то там не так, надо бы спросить Мишу',
+                                         reply_markup=create_inline_kb(1, understand='Ладно..'))
+
 
 
 # bellow are handler for answering and deleting any random message

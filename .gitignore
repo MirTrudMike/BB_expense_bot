@@ -14,3 +14,4 @@ config_data/__pycache__/info.cpython-310.pyc
 xlsx_reports
 expense_base.json
 full_history.json
+log/info.log
