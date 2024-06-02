@@ -18,8 +18,14 @@ class TgBot:
     password: str
 
 @dataclass
+class Bnovo:
+    login: str
+    password: str
+
+@dataclass
 class Config:
     tg_bot: TgBot
+    bnovo: Bnovo
 
 
 def load_config(path):
@@ -32,6 +38,8 @@ def load_config(path):
             admin_ids=list(map(int, env.list('ADMIN_IDS'))),
             user_ids=list(map(int, env.list('USER_IDS'))),
             blocked_ids=list(map(int, env.list('BLOCKED_IDS'))),
-            password=env('PASSWORD')
-        )
+            password=env('PASSWORD')),
+        bnovo=Bnovo(
+            login=env('BNOVO_LOGIN'),
+            password=env('BNOVO_PASSWORD'))
     )

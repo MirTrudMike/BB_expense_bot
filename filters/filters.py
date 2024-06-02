@@ -39,3 +39,9 @@ def is_int(message: Message):
     except ValueError:
         return False
 
+
+def is_more_zero(message: Message):
+    if int(message.text) > 0:
+        return True
+    else:
+        return False

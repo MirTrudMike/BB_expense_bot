@@ -22,7 +22,9 @@ dp.workflow_data.update(
         'password': config.tg_bot.password,
         'user_ids': config.tg_bot.user_ids,
         'admin_id': config.tg_bot.admin_ids[-1],
-        'blocked_ids': config.tg_bot.blocked_ids
+        'blocked_ids': config.tg_bot.blocked_ids,
+        'bnovo_login': config.bnovo.login,
+        'bnovo_password': config.bnovo.password
     }
 )
 
@@ -41,7 +43,7 @@ async def main() -> None:
     )
     await set_main_menu(bot)
 
-    set_schedulers(bot, config.tg_bot.user_ids[1:], scheduler)
+    set_schedulers(bot, config.tg_bot.user_ids[1:], scheduler, config.bnovo.login, config.bnovo.password)
 
     scheduler.start()
     await dp.start_polling(bot)

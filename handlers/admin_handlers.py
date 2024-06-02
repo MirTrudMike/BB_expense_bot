@@ -13,9 +13,20 @@ from aiogram.fsm.state import default_state
 from keyboards.inline_kb import create_inline_kb
 from aiogram_calendar import SimpleCalendar, SimpleCalendarCallback
 from datetime import datetime
+from breakfast.bf_functions import make_breakfast_plan_for_day
 
 router = Router()
 router.message.filter(IsAdmin())
+
+
+@router.message(Command('test', prefix='.'))
+async def do_test(message: Message, bnovo_login, bnovo_password):
+    plan = make_breakfast_plan_for_day(datetime.now(), bnovo_login, bnovo_password)
+    if plan:
+        await message.answer(text=f"Всего Завтраков: {plan[0]}\n"
+                                  f"{plan[1]}")
+    else:
+        await message.answer(text='НИХУЯ')
 
 
 @router.callback_query(F.data == 'exit', ~StateFilter(default_state))

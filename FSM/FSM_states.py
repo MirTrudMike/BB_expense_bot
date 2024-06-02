@@ -28,8 +28,16 @@ class AdminFSM(StatesGroup):
     confirm_restore_base = State()
 
 
+class BfFSM(StatesGroup):
+    input_bf_number = State()
+    confirm_cook = State()
+    input_cook_salary = State()
+
+
+
 class AdminGetSumFSM(StatesGroup):
     choose_from = State()
     choose_to = State()
     leave_or_delete = State()
+
 

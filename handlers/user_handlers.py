@@ -1,19 +1,21 @@
 from datetime import datetime, timedelta
 from aiogram import Router, F, Bot
-from aiogram.filters import Command, StateFilter
+from aiogram.filters import Command, StateFilter, and_f
 from lexicone import LEXICON_RU, STATE_EXPLAIN
-from filters.filters import IsUser, is_float
+from filters.filters import IsUser, is_float, is_int, is_more_zero
 from aiogram.types import Message, CallbackQuery
 from aiogram_calendar import SimpleCalendar, SimpleCalendarCallback
 from keyboards.inline_kb import categories_inline_kb, create_inline_kb
 from keyboards.regular_kb import reg_categories_kb
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
-from FSM.FSM_states import OldFSM, GetSumFSM
+from FSM.FSM_states import OldFSM, GetSumFSM, BfFSM
 from functions.functions import get_sum, update_base, make_xlsx, load_base, update_history
 from functions.gs_functions import create_new_month_worksheet
 from time import sleep
 from config_data.info import categories_ru, categories
+from breakfast.bf_functions import get_cook_counter, write_breakfast
+from errors import ERROR_CODE
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from functions.chelduler_functions import test_remind1
 import asyncio
@@ -318,7 +320,7 @@ async def process_end_date(callback: CallbackQuery,
                         text=f'📆 {from_date.strftime("%-d %B %Y")} - {date.strftime("%-d %B %Y")}\n\n'
                              f'Там полный ноль по всем пунктам 🙆🏽‍♂️',
                         reply_markup=create_inline_kb(1, delete='Хорошо')
-                                                    )
+                    )
                     await bot.delete_message(chat_id=callback.message.chat.id,
                                              message_id=first_id)
 
@@ -344,8 +346,8 @@ async def process_end_date(callback: CallbackQuery,
                                                                    f' - {date.strftime("%-d %B %Y")}\n')
                     await bot.delete_messages(chat_id=callback.message.chat.id,
                                               message_ids=[i for i in range(first_id,
-                                                                            callback.message.message_id +1)]
-                                                                            )
+                                                                            callback.message.message_id + 1)]
+                                              )
                     await state.clear()
 
                 else:
@@ -442,6 +444,144 @@ async def process_new_worksheet_yes(callback: CallbackQuery):
                                          reply_markup=create_inline_kb(1, understand='Ладно..'))
 
 
+@router.callback_query(F.data == 'bf_count_wrong')
+async def do_wrong_bk_count(callback: CallbackQuery, state: FSMContext):
+    first_id = callback.message.message_id
+    await callback.message.edit_text(text="😱 Значит в Bnovo ошибка\n\n"
+                                          "Хорошо, напиши сколько было завтраков:")
+    await state.update_data(first_id=first_id)
+    await state.set_state(BfFSM.input_bf_number)
+
+
+@router.message(F.text == '0')
+async def do_zero_bf(message: Message, state: FSMContext, bot: Bot):
+    await message.answer(text='Ну и хорошо!\n'
+                              'Значит мне нечего записывать')
+    data = await state.get_data()
+    first_id = data['first_id']
+    await state.clear()
+    await asyncio.sleep(6)
+    await bot.delete_messages(chat_id=message.chat.id,
+                              message_ids=[i for i in range(first_id, message.message_id + 2)])
+
+
+@router.message(is_int, is_more_zero, StateFilter(BfFSM.input_bf_number))
+async def do_fixed_bf_number(message: Message, state: FSMContext):
+    bf_number = int(message.text)
+    cook_day = get_cook_counter() + 1
+    if cook_day <= 12:
+        cook_salary = 50
+    else:
+        cook_salary = 25
+    await message.answer(text=f"🥯 Исправил на {bf_number}\n\n"
+                              f"🗒 И для Мзии это день № {cook_day}\n\n"
+                              f"🤑 И значит ты заплатишь ей \n**** {cook_salary} Лари ****",
+                         reply_markup=create_inline_kb(1,
+                                                       confirm_cook="✅ Согласна",
+                                                       adit_cook="💸 Другая сумма",
+                                                       cook_off="🙄 У Мзии выходной"))
+    await state.update_data(bf_number=bf_number,
+                            cook_day=cook_day,
+                            cook_salary=cook_salary)
+    await state.set_state(BfFSM.confirm_cook)
+
+
+@router.message(StateFilter(BfFSM.input_bf_number))
+async def do_wrong_bf_input(message: Message, state: FSMContext, bot: Bot):
+    await message.answer(text="Не бывает так!")
+    await asyncio.sleep(2)
+    await bot.delete_messages(chat_id=message.chat.id,
+                              message_ids=[i for i in range(message.message_id, message.message_id + 2)])
+
+
+@router.callback_query(F.data == 'bf_count_correct')
+async def do_confirm_breakfast(callback: CallbackQuery, state: FSMContext):
+    first_id = callback.message.message_id
+    bf_number = int(callback.message.text.split('завтраков: ')[-1])
+    cook_day = get_cook_counter() + 1
+    if cook_day <= 12:
+        cook_salary = 50
+    else:
+        cook_salary = 25
+    await callback.message.edit_text(text=f"🗒 И для Мзии это день № {cook_day}\n\n"
+                                          f"🤑 И значит ты заплатишь ей\n**** {cook_salary} Лари ****",
+                                     reply_markup=create_inline_kb(1,
+                                                                   confirm_cook="✅ Согласна",
+                                                                   adit_cook="💸 Другая сумма",
+                                                                   cook_off="🙄 У Мзии выходной"))
+    await state.update_data(first_id=first_id,
+                            bf_number=bf_number,
+                            cook_day=cook_day,
+                            cook_salary=cook_salary)
+    await state.set_state(BfFSM.confirm_cook)
+
+
+@router.callback_query(F.data == 'adit_cook', StateFilter(BfFSM.confirm_cook))
+async def do_edit_cook_salary(callback: CallbackQuery, state: FSMContext):
+    await callback.message.edit_text(text="🫣 Ну окей...\n\n"
+                                          "Введи правильную сумму:")
+    await state.set_state(BfFSM.input_cook_salary)
+
+
+@router.message(is_int, StateFilter(BfFSM.input_cook_salary))
+async def do_salary_input(message: Message, state: FSMContext):
+    data = await state.get_data()
+    bf_number = data['bf_number']
+    cook_salary = int(message.text)
+    await state.update_data(cook_salary=cook_salary)
+    await message.answer(text=f"Ну значит будет так:\n\n"
+                              f"🍳 Завтраков   {bf_number}\n"
+                              f"💲 Мзия   {cook_salary}",
+                         reply_markup=create_inline_kb(1, confirm_cook="👏🏼 Да!"))
+    await state.set_state(BfFSM.confirm_cook)
+
+
+@router.message(StateFilter(BfFSM.input_cook_salary))
+async def do_wrong_bf_input(message: Message, state: FSMContext, bot: Bot):
+    await message.answer(text="Не бывает так!")
+    await asyncio.sleep(2)
+    await bot.delete_messages(chat_id=message.chat.id,
+                              message_ids=[i for i in range(message.message_id, message.message_id + 2)])
+
+
+@router.callback_query(F.data == 'cook_off', StateFilter(BfFSM.confirm_cook))
+async def do_no_cook_today(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    bf_number = data['bf_number']
+    cook_day = 'XXX'
+    cook_salary = 0
+    await state.update_data(cook_day=cook_day,
+                            cook_salary=cook_salary)
+    await callback.message.edit_text(text=f"Ну значит будет так:\n\n"
+                                          f"🍳 Завтраков   {bf_number}\n"
+                                          f"💲 Мзия   {cook_salary}",
+                                     reply_markup=create_inline_kb(1, confirm_cook="👏🏼 Да!"))
+    await state.set_state(BfFSM.confirm_cook)
+
+
+@router.callback_query(F.data == 'confirm_cook', StateFilter(BfFSM.confirm_cook))
+async def finish_bf_record(callback: CallbackQuery, state: FSMContext, bot: Bot, admin_id):
+    data = await state.get_data()
+    first_id = data['first_id']
+    bf_number = data['bf_number']
+    cook_day = data['cook_day']
+    cook_salary = data['cook_salary']
+
+    await callback.message.edit_text(text="😎 Отлично!\n\n"
+                                          "Я всё запишу")
+    await state.clear()
+
+    write_breakfast_result = write_breakfast(bf_number, cook_day, cook_salary)
+
+    errors = '\n'.join([ERROR_CODE[error] for error in write_breakfast_result if error in ERROR_CODE])
+    if errors:
+        await bot.send_message(chat_id=admin_id,
+                               text=errors)
+
+    await asyncio.sleep(4)
+    await bot.delete_messages(chat_id=callback.message.chat.id,
+                              message_ids=[i for i in range(first_id, callback.message.message_id + 1)])
+
 
 # bellow are handler for answering and deleting any random message
 # bellow are handler for answering and deleting any random message
@@ -459,7 +599,7 @@ async def process_understand_button(callback: CallbackQuery, bot):
     await bot.delete_messages(chat_id=callback.message.chat.id,
                               message_ids=[callback.message.message_id,
                                            callback.message.message_id - 1]
-                        )
+                              )
 
 
 @router.callback_query(F.data == 'dont_understand', ~StateFilter(default_state))
