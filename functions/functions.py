@@ -68,7 +68,7 @@ def make_xlsx(from_date, to_date):
     with open('expense_base.json', mode='r') as file:
         base = json.load(file)
     file_name = f"Cash_expenses-{from_date.strftime('%-d%B')}-{to_date.strftime('%-d%B')}.xlsx"
-    df = pd.DataFrame(base[1:]).drop(['input_type', 'user'], axis=1)
+    df = pd.DataFrame(base[1:]).drop(['input_type', 'user', 'created'], axis=1)
     df.columns = ['Date', 'Category', 'Amount', 'Comment', '#']
     df = df.set_index('#')
     df['Date'] = np.vectorize(lambda s: datetime.strptime(s, '%d %B %Y'))(df['Date'])
