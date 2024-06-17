@@ -79,9 +79,8 @@ def get_cook_counter():
     return cook_day_number
 
 
-def write_bf_to_counter(bf_number, cook_day, cook_salary):
+def write_bf_to_counter(date, bf_number, cook_day, cook_salary):
     try:
-        date = datetime.now().strftime("%d.%m.%Y")
         month = datetime.now().strftime("%m-%Y")
 
         with open(f"{os.path.abspath('./breakfast/counter.json')}", mode='r') as file:
@@ -102,9 +101,8 @@ def write_bf_to_counter(bf_number, cook_day, cook_salary):
         return 100
 
 
-def write_bf_google(bf_number, cook_day, cook_salary):
+def write_bf_google(date, bf_number, cook_day, cook_salary, cook_exp):
     try:
-        date = datetime.now().strftime("%d.%m.%Y")
         today_month = datetime.now().strftime('%B-%Y')
         sheet_name = 'Breakfast_counter'
         full_base_id = '1Ai_tk1B5t05xqbJgjzLZW8aPiNUlN3bxvSgQt-9HUNc'
@@ -119,7 +117,7 @@ def write_bf_google(bf_number, cook_day, cook_salary):
 
         base = full_base[0]
         free_row = len(base.get_all_records()) + 2
-        base.update_row(free_row, [date, bf_number, cook_day, cook_salary])
+        base.update_row(free_row, [date, bf_number, cook_day, cook_salary, cook_exp])
 
         return True
 
@@ -127,8 +125,8 @@ def write_bf_google(bf_number, cook_day, cook_salary):
         return 200
 
 
-def write_breakfast(bf_number, cook_day, cook_salary):
-    counter = write_bf_to_counter(bf_number, cook_day, cook_salary)
-    google = write_bf_google(bf_number, cook_day, cook_salary)
+def write_breakfast(date, bf_number, cook_day, cook_salary, cook_exp):
+    counter = write_bf_to_counter(date, bf_number, cook_day, cook_salary)
+    google = write_bf_google(date, bf_number, cook_day, cook_salary, cook_exp)
 
     return [counter, google]

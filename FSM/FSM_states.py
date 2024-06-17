@@ -32,7 +32,7 @@ class BfFSM(StatesGroup):
     input_bf_number = State()
     confirm_cook = State()
     input_cook_salary = State()
-
+    input_cook_exp = State()
 
 
 class AdminGetSumFSM(StatesGroup):

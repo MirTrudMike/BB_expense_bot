@@ -446,10 +446,11 @@ async def process_new_worksheet_yes(callback: CallbackQuery):
 
 @router.callback_query(F.data == 'bf_count_wrong')
 async def do_wrong_bk_count(callback: CallbackQuery, state: FSMContext):
+    date = callback.message.text.split("\n")[0].split()[1]
     first_id = callback.message.message_id
     await callback.message.edit_text(text="😱 Значит в Bnovo ошибка\n\n"
                                           "Хорошо, напиши сколько было завтраков:")
-    await state.update_data(first_id=first_id)
+    await state.update_data(first_id=first_id, date=date)
     await state.set_state(BfFSM.input_bf_number)
 
 
@@ -496,6 +497,7 @@ async def do_wrong_bf_input(message: Message, state: FSMContext, bot: Bot):
 
 @router.callback_query(F.data == 'bf_count_correct')
 async def do_confirm_breakfast(callback: CallbackQuery, state: FSMContext):
+    date = callback.message.text.split("\n")[0].split()[1]
     first_id = callback.message.message_id
     bf_number = int(callback.message.text.split('завтраков: ')[-1])
     cook_day = get_cook_counter() + 1
@@ -510,6 +512,7 @@ async def do_confirm_breakfast(callback: CallbackQuery, state: FSMContext):
                                                                    adit_cook="💸 Другая сумма",
                                                                    cook_off="🙄 У Мзии выходной"))
     await state.update_data(first_id=first_id,
+                            date=date,
                             bf_number=bf_number,
                             cook_day=cook_day,
                             cook_salary=cook_salary)
@@ -560,18 +563,66 @@ async def do_no_cook_today(callback: CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(F.data == 'confirm_cook', StateFilter(BfFSM.confirm_cook))
-async def finish_bf_record(callback: CallbackQuery, state: FSMContext, bot: Bot, admin_id):
+async def ask_about_mzia_expense(callback: CallbackQuery, state: FSMContext):
+    await callback.message.edit_text(text=f"❓ Хочешь добавить расходы Мзии?",
+                                     reply_markup=create_inline_kb(1, yes_bf_ep="✅ Да", final_bf="❌ Нет"))
+
+
+@router.callback_query(F.data == 'yes_bf_ep', StateFilter(BfFSM.confirm_cook))
+async def add_mzia_exp(callback: CallbackQuery, state: FSMContext):
+    await callback.message.edit_text(text="Хорошо\n\nТогда введи сумму:")
+    await state.set_state(BfFSM.input_cook_exp)
+
+
+@router.message(StateFilter(BfFSM.input_cook_exp))
+async def get_cook_exp(message: Message, state: FSMContext, bot: Bot, admin_id: int):
+    cook_exp = message.text
     data = await state.get_data()
     first_id = data['first_id']
+    date = data['date']
     bf_number = data['bf_number']
     cook_day = data['cook_day']
     cook_salary = data['cook_salary']
+
+    await message.answer(text="😎 Отлично!\n\n"
+                              "Я всё запишу")
+    await state.clear()
+
+    write_breakfast_result = write_breakfast(date, bf_number, cook_day, cook_salary, cook_exp)
+
+    await bot.send_message(chat_id=admin_id,
+                           text=f"📆 {date}"
+                                f"✅ BF WRITTEN")
+
+    errors = '\n'.join([ERROR_CODE[error] for error in write_breakfast_result if error in ERROR_CODE])
+    if errors:
+        await bot.send_message(chat_id=admin_id,
+                               text=errors)
+
+    await asyncio.sleep(4)
+    await bot.delete_messages(chat_id=message.chat.id,
+                              message_ids=[i for i in range(first_id, message.message_id + 1)])
+
+
+@router.callback_query(F.data == 'final_bf', StateFilter(BfFSM.confirm_cook))
+async def finish_bf_record(callback: CallbackQuery, state: FSMContext, bot: Bot, admin_id):
+    data = await state.get_data()
+    first_id = data['first_id']
+    date = data['date']
+    bf_number = data['bf_number']
+    cook_day = data['cook_day']
+    cook_salary = data['cook_salary']
+    cook_exp = 0
 
     await callback.message.edit_text(text="😎 Отлично!\n\n"
                                           "Я всё запишу")
     await state.clear()
 
-    write_breakfast_result = write_breakfast(bf_number, cook_day, cook_salary)
+    write_breakfast_result = write_breakfast(date, bf_number, cook_day, cook_salary, cook_exp)
+
+    await bot.send_message(chat_id=admin_id,
+                           text=f"📆 {date}"
+                                f"✅ BF WRITTEN")
 
     errors = '\n'.join([ERROR_CODE[error] for error in write_breakfast_result if error in ERROR_CODE])
     if errors:

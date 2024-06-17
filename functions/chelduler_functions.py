@@ -31,35 +31,45 @@ async def ask_new_month_worksheet(bot: Bot, user_ids: list):
                                                              ask_decline='Я сама 🧔🏼‍♀️'))
 
 
-async def ask_breakfast(bot: Bot, user_ids: list, bnovo_login, bnovo_password):
+async def ask_breakfast(bot: Bot, user_ids: list, bnovo_login, bnovo_password, admin_id):
     response = False
     while not response:
         response = make_breakfast_plan_for_day(datetime.now(), bnovo_login, bnovo_password)
         total_bf = response[0]
         text = response[1]
+        date_text = datetime.now().strftime('%d.%m.%Y')
         if total_bf != 0:
             for user_id in user_ids:
                 await bot.send_message(chat_id=user_id,
-                                       text=f"🫡 Вот что я узнал про завтраки!\n\n"
+                                       text=f"📆 {date_text}\n"
+                                            f"🫡 Вот что я узнал про завтраки!\n\n"
                                             f"Сегодня было так:\n"
                                             f"{text}\n\n"
                                             f"🥯 Всего завтраков: {total_bf}",
                                        reply_markup=create_inline_kb(1,
                                                                      bf_count_correct="✅ Правильно",
                                                                      bf_count_wrong="❌ Нет, не так!"))
+                await bot.send_message(chat_id=admin_id,
+                                       text=f"📆 {date_text}\n"
+                                            f"❓ Breakfast Asked")
         else:
             for user_id in user_ids:
                 await bot.send_message(chat_id=user_id,
-                                       text=f"Я там проверил, и кажется"
+                                       text=f"📆 {date_text}\n"
+                                            f"Я там проверил, и кажется\n\n"
                                             f"🥯 Сегодня не было завтраков?",
                                        reply_markup=create_inline_kb(1,
                                                                      no_bf_correct="✅ Правильно",
                                                                      bf_count_wrong="❌ Нет, не так!")
                                        )
+                await bot.send_message(chat_id=admin_id,
+                                       text=f"📆 {date_text}\n"
+                                            f"❓ Breakfast Asked")
+
         await asyncio.sleep(600)
 
 
-def set_schedulers(bot: Bot, user_ids: list, scheduler: AsyncIOScheduler, bnovo_login, bnovo_password):
+def set_schedulers(bot: Bot, user_ids: list, scheduler: AsyncIOScheduler, bnovo_login, bnovo_password, admin_id: int):
     scheduler.add_job(ask_yesterday,
                       trigger='cron',
                       hour="8",
@@ -82,5 +92,6 @@ def set_schedulers(bot: Bot, user_ids: list, scheduler: AsyncIOScheduler, bnovo_
                       kwargs={'bot': bot,
                               'user_ids': user_ids,
                               'bnovo_login': bnovo_login,
-                              'bnovo_password': bnovo_password}
+                              'bnovo_password': bnovo_password,
+                              'admin_id': admin_id}
                       )

@@ -43,7 +43,7 @@ async def main() -> None:
     )
     await set_main_menu(bot)
 
-    set_schedulers(bot, config.tg_bot.user_ids[1:], scheduler, config.bnovo.login, config.bnovo.password)
+    set_schedulers(bot, config.tg_bot.user_ids[1:], scheduler, config.bnovo.login, config.bnovo.password, config.tg_bot.admin_ids[-1])
 
     scheduler.start()
     await dp.start_polling(bot)
