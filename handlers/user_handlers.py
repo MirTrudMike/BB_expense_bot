@@ -454,14 +454,32 @@ async def do_wrong_bk_count(callback: CallbackQuery, state: FSMContext):
     await state.set_state(BfFSM.input_bf_number)
 
 
-@router.message(F.text == '0')
-async def do_zero_bf(message: Message, state: FSMContext, bot: Bot):
-    await message.answer(text='Ну и хорошо!\n'
-                              'Значит мне нечего записывать')
+@router.message(F.text == '0', StateFilter(BfFSM.input_bf_number))
+async def finish_bf_record_zero(message: Message, state: FSMContext, bot: Bot, admin_id):
     data = await state.get_data()
     first_id = data['first_id']
+    date = data['date']
+    bf_number = 0
+    cook_day = 'XXX'
+    cook_salary = 0
+    cook_exp = 0
+
+    await message.answer(text="😎 Отлично!\n\n"
+                              "Я всё запишу")
     await state.clear()
-    await asyncio.sleep(6)
+
+    write_breakfast_result = write_breakfast(date, bf_number, cook_day, cook_salary, cook_exp)
+
+    await bot.send_message(chat_id=admin_id,
+                           text=f"📆 {date}"
+                                f"✅ BF WRITTEN")
+
+    errors = '\n'.join([ERROR_CODE[error] for error in write_breakfast_result if error in ERROR_CODE])
+    if errors:
+        await bot.send_message(chat_id=admin_id,
+                               text=errors)
+
+    await asyncio.sleep(4)
     await bot.delete_messages(chat_id=message.chat.id,
                               message_ids=[i for i in range(first_id, message.message_id + 2)])
 
@@ -632,6 +650,33 @@ async def finish_bf_record(callback: CallbackQuery, state: FSMContext, bot: Bot,
     await asyncio.sleep(4)
     await bot.delete_messages(chat_id=callback.message.chat.id,
                               message_ids=[i for i in range(first_id, callback.message.message_id + 1)])
+
+
+@router.callback_query(F.data == 'no_bf_correct')
+async def finish_bf_record_no_bf(callback: CallbackQuery, bot: Bot, admin_id):
+    date = callback.message.text.split("\n")[0].split()[1]
+    bf_number = 0
+    cook_day = 'XXX'
+    cook_salary = 0
+    cook_exp = 0
+
+    await callback.message.edit_text(text="😎 Отлично!\n\n"
+                                          "Я всё запишу")
+
+    write_breakfast_result = write_breakfast(date, bf_number, cook_day, cook_salary, cook_exp)
+
+    await bot.send_message(chat_id=admin_id,
+                           text=f"📆 {date}"
+                                f"✅ BF WRITTEN")
+
+    errors = '\n'.join([ERROR_CODE[error] for error in write_breakfast_result if error in ERROR_CODE])
+    if errors:
+        await bot.send_message(chat_id=admin_id,
+                               text=errors)
+
+    await asyncio.sleep(4)
+    await bot.delete_message(chat_id=callback.message.chat.id,
+                             message_id=callback.message.message_id)
 
 
 # bellow are handler for answering and deleting any random message
