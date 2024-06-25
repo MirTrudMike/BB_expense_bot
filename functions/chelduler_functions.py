@@ -87,8 +87,8 @@ def set_schedulers(bot: Bot, user_ids: list, scheduler: AsyncIOScheduler, bnovo_
                       )
     scheduler.add_job(ask_breakfast,
                       trigger='cron',
-                      hour="23",
-                      minute="5",
+                      hour="15",
+                      minute="55",
                       kwargs={'bot': bot,
                               'user_ids': user_ids,
                               'bnovo_login': bnovo_login,
