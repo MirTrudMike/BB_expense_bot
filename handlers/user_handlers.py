@@ -491,7 +491,7 @@ async def do_fixed_bf_number(message: Message, state: FSMContext):
     if cook_day <= 12:
         cook_salary = 50
     else:
-        cook_salary = 25
+        cook_salary = 50
     await message.answer(text=f"🥯 Исправил на {bf_number}\n\n"
                               f"🗒 И для Мзии это день № {cook_day}\n\n"
                               f"🤑 И значит ты заплатишь ей \n**** {cook_salary} Лари ****",
@@ -522,7 +522,7 @@ async def do_confirm_breakfast(callback: CallbackQuery, state: FSMContext):
     if cook_day <= 12:
         cook_salary = 50
     else:
-        cook_salary = 25
+        cook_salary = 50
     await callback.message.edit_text(text=f"🗒 И для Мзии это день № {cook_day}\n\n"
                                           f"🤑 И значит ты заплатишь ей\n**** {cook_salary} Лари ****",
                                      reply_markup=create_inline_kb(1,
@@ -615,11 +615,15 @@ async def get_cook_exp(message: Message, state: FSMContext, bot: Bot, admin_id: 
     errors = '\n'.join([ERROR_CODE[error] for error in write_breakfast_result if error in ERROR_CODE])
     if errors:
         await bot.send_message(chat_id=admin_id,
-                               text=errors)
-
+                               text=f"{date}\n"
+                                    f"BF number: {bf_number}\n"
+                                    f"Cook Day: {cook_day}\n"
+                                    f"Cook Salary: {cook_salary}\n"
+                                    f"Expense: {cook_exp}\n"
+                                    f"{errors}")
     await asyncio.sleep(4)
     await bot.delete_messages(chat_id=message.chat.id,
-                              message_ids=[i for i in range(first_id, message.message_id + 1)])
+                              message_ids=[i for i in range(first_id, message.message_id + 2)])
 
 
 @router.callback_query(F.data == 'final_bf', StateFilter(BfFSM.confirm_cook))
@@ -645,11 +649,16 @@ async def finish_bf_record(callback: CallbackQuery, state: FSMContext, bot: Bot,
     errors = '\n'.join([ERROR_CODE[error] for error in write_breakfast_result if error in ERROR_CODE])
     if errors:
         await bot.send_message(chat_id=admin_id,
-                               text=errors)
+                               text=f"{date}\n"
+                                    f"BF number: {bf_number}\n"
+                                    f"Cook Day: {cook_day}\n"
+                                    f"Cook Salary: {cook_salary}\n"
+                                    f"Expense: {cook_exp}\n"
+                                    f"{errors}")
 
     await asyncio.sleep(4)
     await bot.delete_messages(chat_id=callback.message.chat.id,
-                              message_ids=[i for i in range(first_id, callback.message.message_id + 1)])
+                              message_ids=[i for i in range(first_id, callback.message.message_id + 2)])
 
 
 @router.callback_query(F.data == 'no_bf_correct')
@@ -672,7 +681,12 @@ async def finish_bf_record_no_bf(callback: CallbackQuery, bot: Bot, admin_id):
     errors = '\n'.join([ERROR_CODE[error] for error in write_breakfast_result if error in ERROR_CODE])
     if errors:
         await bot.send_message(chat_id=admin_id,
-                               text=errors)
+                               text=f"{date}\n"
+                                    f"BF number: {bf_number}\n"
+                                    f"Cook Day: {cook_day}\n"
+                                    f"Cook Salary: {cook_salary}\n"
+                                    f"Expense: {cook_exp}\n"
+                                    f"{errors}")
 
     await asyncio.sleep(4)
     await bot.delete_message(chat_id=callback.message.chat.id,

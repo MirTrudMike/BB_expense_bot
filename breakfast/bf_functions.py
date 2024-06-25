@@ -79,7 +79,7 @@ def get_cook_counter():
     return cook_day_number
 
 
-def write_bf_to_counter(date, bf_number, cook_day, cook_salary):
+def write_bf_to_counter(date, bf_number, cook_day, cook_salary, cook_exp):
     try:
         month = datetime.now().strftime("%m-%Y")
 
@@ -91,6 +91,7 @@ def write_bf_to_counter(date, bf_number, cook_day, cook_salary):
             counter['cook_days'][month] = (counter['cook_days'].setdefault(month, 0) * 0) + cook_day
 
         counter['cook_salary'].update({date: cook_salary})
+        counter['cook_expense'].update({date: int(cook_exp)})
 
         with open(f"{os.path.abspath('./breakfast/counter.json')}", mode='w') as file:
             json.dump(counter, file, indent=4, ensure_ascii=False)
@@ -126,7 +127,7 @@ def write_bf_google(date, bf_number, cook_day, cook_salary, cook_exp):
 
 
 def write_breakfast(date, bf_number, cook_day, cook_salary, cook_exp):
-    counter = write_bf_to_counter(date, bf_number, cook_day, cook_salary)
+    counter = write_bf_to_counter(date, bf_number, cook_day, cook_salary, cook_exp)
     google = write_bf_google(date, bf_number, cook_day, cook_salary, cook_exp)
 
     return [counter, google]
