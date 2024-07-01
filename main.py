@@ -20,7 +20,7 @@ dp = Dispatcher(storage=storage)
 dp.workflow_data.update(
     {
         'password': config.tg_bot.password,
-        'user_ids': config.tg_bot.user_ids,
+        'user_ids': config.tg_bot.user_ids[1:],
         'admin_id': config.tg_bot.admin_ids[-1],
         'blocked_ids': config.tg_bot.blocked_ids,
         'bnovo_login': config.bnovo.login,
