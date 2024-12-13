@@ -361,12 +361,10 @@ async def process_end_date(callback: CallbackQuery,
 
                     await state.set_state(GetSumFSM.leave_or_delete)
 
-            except:
+            except Exception as e:
                 await callback.message.edit_text(
-                    text=f'📆 {from_date.strftime("%-d %B %Y")} - {date.strftime("%-d %B %Y")}\n\n'
-                         f'Там полный ноль по всем пунктам 🙆🏽‍♂️',
-                    reply_markup=create_inline_kb(1, delete='Хорошо')
-                )
+                    text=f'️{e}')
+
                 await bot.delete_message(chat_id=callback.message.chat.id,
                                          message_id=first_id)
 

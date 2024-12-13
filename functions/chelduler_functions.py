@@ -80,8 +80,8 @@ def set_schedulers(bot: Bot, user_ids: list, scheduler: AsyncIOScheduler, bnovo_
     scheduler.add_job(ask_new_month_worksheet,
                       trigger='cron',
                       day="1",
-                      hour="12",
-                      minute="1",
+                      hour="19",
+                      minute="8",
                       kwargs={'bot': bot,
                               'user_ids': user_ids}
                       )
